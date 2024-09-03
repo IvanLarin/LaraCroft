@@ -21,6 +21,7 @@
             catch (Exception e)
             {
                 logger.LogError($"Необработанная ошибка: {e.Message}");
+                throw;
             }
         }
 

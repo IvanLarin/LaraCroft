@@ -2,18 +2,18 @@
 {
     public class Candle
     {
-        decimal Open { get; set; }
+        public decimal Open { get; init; }
 
-        decimal Close { get; set; }
+        public decimal Close { get; init; }
 
-        decimal Hight { get; set; }
+        public decimal High { get; init; }
 
-        decimal Low { get; set; }
+        public decimal Low { get; init; }
 
-        double Volume { get; set; }
+        public double Volume { get; init; }
 
-        DateTime Begin { get; set; }
+        public DateTime Begin { get; init; }
 
-        DateTime End { get; set; }
+        public DateTime End { get; init; }
     }
 }
