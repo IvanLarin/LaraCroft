@@ -2,6 +2,6 @@
 {
     public interface Input
     {
-        IList<string> GetTickers();
+        string[] GetTickers();
     }
 }

@@ -9,11 +9,11 @@
 
             do
             {
-                IList<Candle> candles = await history.GetCandlesFrom(position);
+                Candle[] candles = await history.GetCandlesFrom(position);
 
                 storage.Save(candles);
 
-                theEnd = candles.Count == 0;
+                theEnd = candles.Length == 0;
 
             } while (!theEnd);
         }

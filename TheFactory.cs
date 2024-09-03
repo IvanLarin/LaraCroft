@@ -2,9 +2,9 @@
 
 public class TheFactory : Factory
 {
-    private readonly Logger logger = new TheLogger();
+    private Logger? logger;
 
-    public Input MakeInput() => new JsonInput(logger);
+    public Input MakeInput() => new TheInput();
 
     public History MakeHistoryOf(string ticker)
     {
@@ -15,4 +15,6 @@ public class TheFactory : Factory
     {
         throw new NotImplementedException();
     }
+
+    public Logger MakeLogger() => logger ??= new TheLogger();
 }

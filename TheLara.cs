@@ -4,15 +4,35 @@
     {
         private readonly Input input = factory.MakeInput();
 
-        public void DownloadHistory()
+        private readonly Logger logger = factory.MakeLogger();
+
+        public async Task DownloadHistory(Action? onSuccess = null)
         {
-            IList<string> tickers = input.GetTickers();
+            try
+            {
+                await Download();
+
+                onSuccess?.Invoke();
+            }
+            catch (TerminateException e)
+            {
+                logger.LogError(e.Message);
+            }
+            catch (Exception e)
+            {
+                logger.LogError($"Необработанная ошибка: {e.Message}");
+            }
+        }
+
+        private async Task Download()
+        {
+            string[] tickers = input.GetTickers();
 
             foreach (string ticker in tickers)
             {
                 Excavator excavator = factory.MakeExcavator(ticker);
 
-                excavator.Dig(ticker);
+                await excavator.Dig(ticker);
             }
         }
     }

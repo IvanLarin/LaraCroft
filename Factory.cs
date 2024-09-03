@@ -7,4 +7,6 @@ public interface Factory
     History MakeHistoryOf(string ticker);
 
     Excavator MakeExcavator(string ticker);
+
+    Logger MakeLogger();
 }

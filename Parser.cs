@@ -2,5 +2,5 @@
 
 public interface Parser
 {
-    IList<Candle> Parse(string text);
+    Candle[] Parse(string text);
 }

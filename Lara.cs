@@ -2,6 +2,6 @@
 {
     public interface Lara
     {
-        void DownloadHistory();
+        Task DownloadHistory(Action? onSuccess = null);
     }
 }

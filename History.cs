@@ -2,5 +2,5 @@
 
 public interface History
 {
-    Task<IList<Candle>> GetCandlesFrom(int position);
+    Task<Candle[]> GetCandlesFrom(int position);
 }

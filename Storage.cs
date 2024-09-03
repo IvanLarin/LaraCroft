@@ -2,5 +2,5 @@
 
 public interface Storage
 {
-    void Save(IList<Candle> candles);
+    void Save(Candle[] candles);
 }
