@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft
 {
-    public class Candle
+    public record Candle
     {
         public double Open { get; init; }
 

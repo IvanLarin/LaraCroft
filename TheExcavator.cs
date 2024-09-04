@@ -11,7 +11,7 @@ namespace LaraCroft
 
             do
             {
-                Candle[] candles = await history.GetCandlesFrom(position);
+                Candle[] candles = await history.GetCandles(position);
 
                 storage.Save(candles);
 

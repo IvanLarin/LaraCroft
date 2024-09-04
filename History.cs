@@ -2,5 +2,5 @@
 
 public interface History
 {
-    Task<Candle[]> GetCandlesFrom(int position);
+    Task<Candle[]> GetCandles(int fromPosition);
 }

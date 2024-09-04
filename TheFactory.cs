@@ -10,11 +10,13 @@ public class TheFactory : Factory
 
     public Excavator MakeExcavator(string ticker) => new TheExcavator(MakeHistoryOf(ticker), MakeStorage(ticker), MakeLogger());
 
-    private History MakeHistoryOf(string ticker) => new MoexHistory(ticker, MakeHttpClient(), MakeParser());
+    private History MakeHistoryOf(string ticker) => new MoexHistory(ticker, MakeHttpClient(), MakeCandleParser(), MakeSplitParser());
+
+    private SplitParser MakeSplitParser() => new XmlSplitParser();
 
     private HttpClient MakeHttpClient() => httpClient ??= new HttpClient();
 
-    private Parser MakeParser() => new XmlParser();
+    private CandleParser MakeCandleParser() => new XmlCandleParser();
 
     private Storage MakeStorage(string ticker) => new TxtFile(ticker, MakeConfig());
 

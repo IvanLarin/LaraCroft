@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface Parser
+public interface CandleParser
 {
     Candle[] Parse(string text);
 }
