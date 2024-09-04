@@ -6,7 +6,7 @@ public class TheFactory : Factory
 
     private HttpClient? httpClient;
 
-    public Lara MakeLara() => new TheLaraStyle(new TheLara(this), this);
+    public Lara MakeLara() => new TheStyleOf(new TheLara(this), this);
 
     public Input MakeInput() => new TheInput();
 

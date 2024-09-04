@@ -1,9 +1,10 @@
-﻿using LaraCroft;
+﻿using ConsoleApplication;
+using LaraCroft;
 
 Lara lara = new TheFactory().MakeLara();
 
-Environment.ExitCode = 1;
+void ReturnOk() => Environment.Exit(0);
 
-await lara.DownloadCandles(() => Environment.ExitCode = 0);
+await new ChatWith(lara, onSuccess: ReturnOk).Start();
 
-Console.ReadLine();
+Environment.Exit(1);

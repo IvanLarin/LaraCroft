@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-internal class TheLaraStyle(Lara lara, Factory factory) : Lara
+internal class TheStyleOf(Lara lara, Factory factory) : Lara
 {
     private readonly Logger logger = factory.MakeLogger();
 
@@ -16,9 +16,9 @@ internal class TheLaraStyle(Lara lara, Factory factory) : Lara
         {
             await doIt();
 
-            onSuccess?.Invoke();
-
             logger.LogSuccess("Миссия выполнена");
+
+            onSuccess?.Invoke();
         }
         catch (TerminateException e)
         {
