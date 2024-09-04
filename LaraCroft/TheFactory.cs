@@ -6,6 +6,8 @@ public class TheFactory : Factory
 
     private HttpClient? httpClient;
 
+    public Lara MakeLara() => new TheLaraStyle(new TheLara(this), this);
+
     public Input MakeInput() => new TheInput();
 
     public Excavator MakeExcavator(string ticker) => new TheExcavator(MakeHistoryOf(ticker), MakeStorage(ticker), MakeLogger());

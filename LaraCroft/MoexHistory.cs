@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public class MoexHistory(string ticker, HttpClient httpClient, CandleParser candleParser, SplitParser splitParser) : History
+internal class MoexHistory(string ticker, HttpClient httpClient, CandleParser candleParser, SplitParser splitParser) : History
 {
     public async Task<Candle[]> GetCandles(int fromPosition)
     {

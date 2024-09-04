@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface Config
+internal interface Config
 {
     string OutputDirectory { get; }
 

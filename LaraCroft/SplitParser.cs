@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface SplitParser
+internal interface SplitParser
 {
     double[] Parse(string text);
 }

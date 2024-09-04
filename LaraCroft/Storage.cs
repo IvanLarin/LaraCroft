@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface Storage
+internal interface Storage
 {
     void Save(Candle[] candles);
 }

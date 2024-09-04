@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface History
+internal interface History
 {
     Task<Candle[]> GetCandles(int fromPosition);
 }

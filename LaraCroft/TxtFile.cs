@@ -2,7 +2,7 @@
 
 namespace LaraCroft;
 
-public class TxtFile(string ticker, Config config) : Storage
+internal class TxtFile(string ticker, Config config) : Storage
 {
     private bool alreadySaved;
 

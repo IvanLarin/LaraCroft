@@ -2,7 +2,7 @@
 
 namespace LaraCroft;
 
-public class XmlSplitParser : SplitParser
+internal class XmlSplitParser : SplitParser
 {
     public double[] Parse(string text)
     {
@@ -12,7 +12,7 @@ public class XmlSplitParser : SplitParser
         {
             var document = XDocument.Parse(text);
 
-            Split[] splits = document.Descendants("row").Select(row => new Split()
+            Split[] splits = document.Descendants("row").Select(row => new Split
             {
                 Before = ParseInt(row.Attribute("before")?.Value),
                 After = ParseInt(row.Attribute("after")?.Value),

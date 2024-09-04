@@ -2,7 +2,7 @@
 
 namespace LaraCroft;
 
-public class JsonConfig : Config
+internal class JsonConfig : Config
 {
 
     public JsonConfig(Constants constants)

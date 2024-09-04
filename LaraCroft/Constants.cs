@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public interface Constants
+internal interface Constants
 {
     string ConfigFilePath { get; }
 

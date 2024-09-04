@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaraCroft", "LaraCroft.csproj", "{9179ADC3-9E67-4A66-9AAF-4C14F725D32F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaraCroft", "LaraCroft\LaraCroft.csproj", "{BB5E526F-D9AD-4F37-94AB-3F277138DA7A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApplication", "ConsoleApplication\ConsoleApplication.csproj", "{A88D0869-7A43-4D65-BC5F-0CC27D67F1E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{9179ADC3-9E67-4A66-9AAF-4C14F725D32F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9179ADC3-9E67-4A66-9AAF-4C14F725D32F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9179ADC3-9E67-4A66-9AAF-4C14F725D32F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9179ADC3-9E67-4A66-9AAF-4C14F725D32F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB5E526F-D9AD-4F37-94AB-3F277138DA7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB5E526F-D9AD-4F37-94AB-3F277138DA7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB5E526F-D9AD-4F37-94AB-3F277138DA7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB5E526F-D9AD-4F37-94AB-3F277138DA7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A88D0869-7A43-4D65-BC5F-0CC27D67F1E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A88D0869-7A43-4D65-BC5F-0CC27D67F1E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A88D0869-7A43-4D65-BC5F-0CC27D67F1E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A88D0869-7A43-4D65-BC5F-0CC27D67F1E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

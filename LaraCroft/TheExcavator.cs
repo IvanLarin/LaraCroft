@@ -2,7 +2,7 @@
 
 namespace LaraCroft
 {
-    public class TheExcavator(History history, Storage storage, Logger logger) : Excavator
+    internal class TheExcavator(History history, Storage storage, Logger logger) : Excavator
     {
         public async Task Dig(string ticker)
         {

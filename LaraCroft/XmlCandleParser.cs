@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace LaraCroft;
 
-public class XmlCandleParser : CandleParser
+internal class XmlCandleParser : CandleParser
 {
     public Candle[] Parse(string text)
     {
