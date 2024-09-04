@@ -9,6 +9,9 @@ public class JsonConfig : Config
     {
         try
         {
+            if (!File.Exists(constants.ConfigFilePath))
+                File.WriteAllText(constants.ConfigFilePath, constants.DefaultConfigContent);
+
             string jsonString = File.ReadAllText(constants.ConfigFilePath);
             ParsedConfig? parsed = JsonSerializer.Deserialize<ParsedConfig>(jsonString);
 
@@ -16,6 +19,7 @@ public class JsonConfig : Config
                 throw new TerminateException();
 
             OutputDirectory = parsed.OutputDirectory;
+            CandleDurationInMinutes = parsed.CandleDurationInMinutes;
         }
         catch (Exception e)
         {
@@ -25,17 +29,19 @@ public class JsonConfig : Config
                 
                 Конфиг должен находиться тут: {{constants.ConfigFilePath}}
                 Он должен иметь такой формат:
-                {
-                  "OutputDirectory": "C:\Data"
-                }
+                {{constants.DefaultConfigContent}}
+                Если его удалить, то программа при старте сделает новый правильный
                 """,
             e);
         }
     }
     public string OutputDirectory { get; }
+    public int CandleDurationInMinutes { get; }
 
     private class ParsedConfig
     {
         public required string OutputDirectory { get; init; }
+
+        public required int CandleDurationInMinutes { get; init; }
     }
 }

@@ -31,6 +31,8 @@
 
             foreach (string ticker in tickers)
             {
+                logger.Log($"Качаю {ticker}");
+
                 Excavator excavator = factory.MakeExcavator(ticker);
 
                 await excavator.Dig(ticker);

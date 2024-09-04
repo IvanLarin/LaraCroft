@@ -7,5 +7,7 @@
         void LogSuccess(string message);
 
         void LogError(string message);
+
+        void UpdateLine(string message);
     }
 }

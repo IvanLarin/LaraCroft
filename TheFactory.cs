@@ -8,21 +8,15 @@ public class TheFactory : Factory
 
     public Input MakeInput() => new TheInput();
 
-    public Excavator MakeExcavator(string ticker) => new TheExcavator(MakeHistoryOf(ticker), MakeStorage(ticker));
+    public Excavator MakeExcavator(string ticker) => new TheExcavator(MakeHistoryOf(ticker), MakeStorage(ticker), MakeLogger());
 
-    private History MakeHistoryOf(string ticker) => new TheHistory(new TheHistory.TheHistoryParameters
-    {
-        Ticker = ticker,
-        HttpClient = MakeHttpClient(),
-        Logger = MakeLogger(),
-        Parser = MakeParser(),
-    });
+    private History MakeHistoryOf(string ticker) => new MoexHistory(ticker, MakeHttpClient(), MakeParser());
 
     private HttpClient MakeHttpClient() => httpClient ??= new HttpClient();
 
     private Parser MakeParser() => new XmlParser();
 
-    private Storage MakeStorage(string ticker) => new FileStorage(ticker, MakeConfig());
+    private Storage MakeStorage(string ticker) => new TxtFile(ticker, MakeConfig());
 
     private Config MakeConfig() => new JsonConfig(MakeConstants());
 
@@ -30,5 +24,5 @@ public class TheFactory : Factory
 
     private Constants MakeConstants() => constants ??= new TheConstants();
 
-    public Logger MakeLogger() => logger ??= new TheLogger();
+    public Logger MakeLogger() => logger ??= new ConsoleLogger();
 }
