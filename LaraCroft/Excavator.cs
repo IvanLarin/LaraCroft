@@ -2,5 +2,5 @@
 
 public interface Excavator
 {
-    Task Dig(string ticker);
+    Task Dig();
 }

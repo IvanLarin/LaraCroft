@@ -2,7 +2,7 @@
 
 namespace LaraCroft;
 
-internal class XmlSplitParser : SplitParser
+internal class XmlSplitsParser : Parser<double[]>
 {
     public double[] Parse(string text)
     {

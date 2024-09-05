@@ -6,7 +6,7 @@ internal class ConsoleLogger : Logger
 {
     private bool lineIsUnderUpdate;
 
-    public void Log(string message) => WithResetUpdating(() => Console.WriteLine("\r\n" + message));
+    public void Log(string message) => WithResetUpdating(() => Console.WriteLine(Environment.NewLine + message));
 
     public void LogSuccess(string message) => WithColor(ConsoleColor.DarkGreen, () => Log(message));
 

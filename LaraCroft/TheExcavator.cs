@@ -4,7 +4,7 @@ namespace LaraCroft
 {
     internal class TheExcavator(History history, PlaceToPut placeToPut, Logger logger) : Excavator
     {
-        public async Task Dig(string ticker)
+        public async Task Dig()
         {
             bool theEnd;
             int position = 0;

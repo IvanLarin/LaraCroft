@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient httpClient, CandleParser candleParser, SplitParser splitParser) : History
+internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient httpClient, Parser<Candle[]> candleParser, Parser<double[]> splitParser) : History
 {
     public async Task<Candle[]> GetCandles(int fromPosition)
     {
@@ -11,18 +11,6 @@ internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient htt
         Candle[] fixedCandles = await FixVolume(candles);
 
         return fixedCandles;
-    }
-
-    private async Task<string> DownloadTextFrom(string url)
-    {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-
-        if (!response.IsSuccessStatusCode)
-            throw new GoodException($"Ошибка GET запроса на сервер по такому URL: \"{url}\"");
-
-        string text = await response.Content.ReadAsStringAsync();
-
-        return text;
     }
 
     private async Task<Candle[]> FixVolume(Candle[] candles)
@@ -73,4 +61,16 @@ internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient htt
 
     private Task<string> DownloadSplitText() => DownloadTextFrom(
         $"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml");
+
+    private async Task<string> DownloadTextFrom(string url)
+    {
+        HttpResponseMessage response = await httpClient.GetAsync(url);
+
+        if (!response.IsSuccessStatusCode)
+            throw new GoodException($"Ошибка GET запроса на сервер по такому URL: \"{url}\"");
+
+        string text = await response.Content.ReadAsStringAsync();
+
+        return text;
+    }
 }

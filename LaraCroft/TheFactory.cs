@@ -14,21 +14,29 @@ internal class TheFactory : Factory
 
     public Logger MakeLogger() => logger ??= new ConsoleLogger();
 
-    public Lara MakeLara() => new TheStyleOf(new TheLara(this), this);
+    public Lara MakeLara() => new TheLara(this);
 
     private History MakeHistoryOf(string ticker, int timeframeInMinutes) => new MoexHistory(ticker, timeframeInMinutes,
-        MakeHttpClient(), MakeCandleParser(), MakeSplitParser());
+        MakeHttpClient(), MakeCandlesParser(), MakeSplitsParser());
 
-    private SplitParser MakeSplitParser() => new XmlSplitParser();
+    private Parser<double[]> MakeSplitsParser() => new XmlSplitsParser();
 
     private HttpClient MakeHttpClient() => httpClient ??= new HttpClient();
 
-    private CandleParser MakeCandleParser() => new XmlCandleParser();
+    private Parser<Candle[]> MakeCandlesParser() => new XmlCandlesParser();
 
     public PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes) =>
         new TxtFile(ticker, timeframeInMinutes, MakeConfig());
 
-    private PlaceToPut MakeStatisticsPlaceToPut(string ticker) => throw new NotImplementedException();
+    public SharesGetter MakeSharesGetter() => new TheSharesGetter(MakeHttpClient(), MakeSharesParser());
+
+    private Parser<Share[]> MakeSharesParser() => new XmlSharesParser();
+
+    public CandleBuffer MakeCandleBuffer() => new TheCandleBuffer();
+
+    public ShareStatistics MakeShareStatistics() => new TheShareStatistics();
+
+    public Output MakeOutput() => new ConsoleOutput();
 
     private Config MakeConfig() => new JsonConfig(MakeConstants());
 

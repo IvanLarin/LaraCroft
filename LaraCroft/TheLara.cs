@@ -14,13 +14,41 @@ internal class TheLara(Factory factory) : Lara
         {
             logger.Log($"Качаю {ticker}");
 
-            var excavator = factory.MakeExcavator(ticker, timeframeInMinutes,
+            Excavator excavator = factory.MakeExcavator(ticker, timeframeInMinutes,
                 factory.MakeFilePlaceToPut(ticker, timeframeInMinutes));
 
-            await excavator.Dig(ticker);
+            await excavator.Dig();
         }
     }
 
-    public Task DownloadVolumes(int timeframeInMinutes) =>
-        throw new NotImplementedException();
+    public async Task DownloadVolumes()
+    {
+        logger.Log("Узнаю какие вообще есть акции...");
+        Share[] shares = await factory.MakeSharesGetter().GetShares();
+
+        logger.Log($$"""
+                   Вот какие:
+                   {{string.Join(Environment.NewLine, shares.Select(share => share.Ticker))}}
+                   """);
+
+        ShareStatistics statistics = factory.MakeShareStatistics();
+
+        foreach (var share in shares)
+        {
+            logger.Log($"Качаю статистику по {share.Ticker}");
+            CandleBuffer buffer = factory.MakeCandleBuffer();
+            Excavator excavator = factory.MakeExcavator(share.Ticker, OneHour, placeToPut: buffer);
+
+            await excavator.Dig();
+
+            statistics.Add(share, buffer.Candles);
+        }
+
+        logger.Log("Вот результаты:" + Environment.NewLine);
+
+        Output output = factory.MakeOutput();
+        statistics.WriteTo(output);
+    }
+
+    private const int OneHour = 60;
 }

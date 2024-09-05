@@ -13,4 +13,6 @@ internal record Candle
     public double Volume { get; init; }
 
     public DateTime Begin { get; init; }
+
+    public DateTime End { get; init; }
 }

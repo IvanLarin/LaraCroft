@@ -24,11 +24,9 @@ internal class TheMindOf : Mind
 
     public void BecomeMainMenu() => Become(new MainMenu(this));
 
-    public void BecomeCandleMenu() => Become(new WithAskingForTimeframe(this, timeframeInMinutes
-            => Lara.DownloadCandles(timeframeInMinutes)));
+    public void BecomeCandle() => Become(new CandleMenu(this));
 
-    public void BecomeVolumeMenu() => Become(new WithAskingForTimeframe(this, timeframeInMinutes
-            => Lara.DownloadVolumes(timeframeInMinutes)));
+    public void BecomeVolume() => Become(new Volume(this));
 
     public void BecomeGoodbye() => Become(new Goodbye(this));
 

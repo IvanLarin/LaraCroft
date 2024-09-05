@@ -31,10 +31,10 @@ internal class MainMenu(Mind mind) : Part
             switch (input)
             {
                 case "1":
-                    mind.BecomeCandleMenu();
+                    mind.BecomeCandle();
                     return;
                 case "2":
-                    mind.BecomeVolumeMenu();
+                    mind.BecomeVolume();
                     return;
                 case "3":
                     mind.BecomeGoodbye();

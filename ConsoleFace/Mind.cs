@@ -10,9 +10,9 @@ internal interface Mind : Part
 
     void BecomeMainMenu();
 
-    void BecomeCandleMenu();
+    void BecomeCandle();
 
-    void BecomeVolumeMenu();
+    void BecomeVolume();
 
     void BecomeGoodbye();
 

@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 namespace LaraCroft;
 
-internal class XmlCandleParser : CandleParser
+internal class XmlCandlesParser : Parser<Candle[]>
 {
     public Candle[] Parse(string text)
     {
@@ -18,6 +18,7 @@ internal class XmlCandleParser : CandleParser
             return document.Descendants("row").Select(row => new Candle()
             {
                 Begin = ParseDateTime(row.Attribute("begin")?.Value),
+                End = ParseDateTime(row.Attribute("end")?.Value),
                 Open = ParseDouble(row.Attribute("open")?.Value),
                 Close = ParseDouble(row.Attribute("close")?.Value),
                 High = ParseDouble(row.Attribute("high")?.Value),

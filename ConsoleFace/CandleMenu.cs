@@ -2,12 +2,12 @@
 
 namespace ConsoleFace;
 
-internal class WithAskingForTimeframe(Mind mind, Func<int, Task> doIt) : Part
+internal class CandleMenu(Mind mind) : Part
 {
     public void Do()
     {
         Console.WriteLine();
-        Console.Write("Введите длину свечи в минутах и нажите Enter: ");
+        Console.Write("Введите интервал в минутах и нажите Enter: ");
 
         while (true)
         {
@@ -23,7 +23,7 @@ internal class WithAskingForTimeframe(Mind mind, Func<int, Task> doIt) : Part
 
             if (int.TryParse(input, out var timeframeInMinutes) && timeframeInMinutes >= 1)
             {
-                doIt(timeframeInMinutes).Wait();
+                mind.Lara.DownloadCandles(timeframeInMinutes).Wait();
 
                 mind.BecomeSuccess();
 

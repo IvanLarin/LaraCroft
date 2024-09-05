@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-public class ThePublicFactory
+public class TheMother
 {
     public Lara MakeLara() => new TheFactory().MakeLara();
 }

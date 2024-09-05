@@ -9,4 +9,12 @@ internal interface Factory
     Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut);
 
     PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes);
+
+    SharesGetter MakeSharesGetter();
+
+    CandleBuffer MakeCandleBuffer();
+
+    ShareStatistics MakeShareStatistics();
+
+    Output MakeOutput();
 }
