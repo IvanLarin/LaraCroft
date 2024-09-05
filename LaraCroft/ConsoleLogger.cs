@@ -1,10 +1,12 @@
-﻿namespace LaraCroft;
+﻿using Common;
+
+namespace LaraCroft;
 
 internal class ConsoleLogger : Logger
 {
     private bool lineIsUnderUpdate;
 
-    public void Log(string message) => WithResetUpdating(() => Console.WriteLine(message));
+    public void Log(string message) => WithResetUpdating(() => Console.WriteLine("\r\n" + message));
 
     public void LogSuccess(string message) => WithColor(ConsoleColor.DarkGreen, () => Log(message));
 
@@ -24,14 +26,5 @@ internal class ConsoleLogger : Logger
         whatToDo();
     }
 
-    private void WithColor(ConsoleColor color, Action whatToDo)
-    {
-        ConsoleColor originalColor = Console.ForegroundColor;
-
-        Console.ForegroundColor = color;
-
-        whatToDo();
-
-        Console.ForegroundColor = originalColor;
-    }
+    private void WithColor(ConsoleColor color, Action doIt) => AwesomeConsole.WithColor(color, doIt);
 }

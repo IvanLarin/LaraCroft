@@ -16,14 +16,13 @@ internal class JsonConfig : Config
             ParsedConfig? parsed = JsonSerializer.Deserialize<ParsedConfig>(jsonString);
 
             if (parsed == null)
-                throw new TerminateException();
+                throw new Exception("Неправильный формат");
 
             OutputDirectory = parsed.OutputDirectory;
-            CandleDurationInMinutes = parsed.CandleDurationInMinutes;
         }
         catch (Exception e)
         {
-            throw new TerminateException(
+            throw new GoodException(
                 $$"""
                 Ошибка чтения конфига: "{{e.Message}}"
                 
@@ -36,12 +35,9 @@ internal class JsonConfig : Config
         }
     }
     public string OutputDirectory { get; }
-    public int CandleDurationInMinutes { get; }
 
     private class ParsedConfig
     {
         public required string OutputDirectory { get; init; }
-
-        public required int CandleDurationInMinutes { get; init; }
     }
 }

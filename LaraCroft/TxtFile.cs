@@ -2,11 +2,11 @@
 
 namespace LaraCroft;
 
-internal class TxtFile(string ticker, Config config) : Storage
+internal class TxtFile(string ticker, int timeframeInMinutes, Config config) : PlaceToPut
 {
     private bool alreadySaved;
 
-    public void Save(Candle[] candles)
+    public void Put(Candle[] candles)
     {
         var fileName = $"{ticker}.txt";
         var filePath = Path.Combine(config.OutputDirectory, fileName);
@@ -23,7 +23,7 @@ internal class TxtFile(string ticker, Config config) : Storage
         {
             var str = string.Join(';', [
                 ticker,
-                config.CandleDurationInMinutes,
+                timeframeInMinutes,
                 candle.Begin.ToString("yyMMdd"),
                 candle.Begin.ToString("HHmmss"),
                 candle.Open.ToString(CultureInfo.InvariantCulture),

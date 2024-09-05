@@ -1,18 +1,23 @@
 ﻿namespace LaraCroft;
 
-public class TheFactory : Factory
+internal class TheFactory : Factory
 {
-    private Logger? logger;
+    private Constants? constants;
 
     private HttpClient? httpClient;
-
-    public Lara MakeLara() => new TheStyleOf(new TheLara(this), this);
+    private Logger? logger;
 
     public Input MakeInput() => new TheInput();
 
-    public Excavator MakeExcavator(string ticker) => new TheExcavator(MakeHistoryOf(ticker), MakeStorage(ticker), MakeLogger());
+    public Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut) =>
+        new TheExcavator(MakeHistoryOf(ticker, timeframeInMinutes), placeToPut, MakeLogger());
 
-    private History MakeHistoryOf(string ticker) => new MoexHistory(ticker, MakeHttpClient(), MakeCandleParser(), MakeSplitParser());
+    public Logger MakeLogger() => logger ??= new ConsoleLogger();
+
+    public Lara MakeLara() => new TheStyleOf(new TheLara(this), this);
+
+    private History MakeHistoryOf(string ticker, int timeframeInMinutes) => new MoexHistory(ticker, timeframeInMinutes,
+        MakeHttpClient(), MakeCandleParser(), MakeSplitParser());
 
     private SplitParser MakeSplitParser() => new XmlSplitParser();
 
@@ -20,13 +25,12 @@ public class TheFactory : Factory
 
     private CandleParser MakeCandleParser() => new XmlCandleParser();
 
-    private Storage MakeStorage(string ticker) => new TxtFile(ticker, MakeConfig());
+    public PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes) =>
+        new TxtFile(ticker, timeframeInMinutes, MakeConfig());
+
+    private PlaceToPut MakeStatisticsPlaceToPut(string ticker) => throw new NotImplementedException();
 
     private Config MakeConfig() => new JsonConfig(MakeConstants());
 
-    private Constants? constants;
-
     private Constants MakeConstants() => constants ??= new TheConstants();
-
-    public Logger MakeLogger() => logger ??= new ConsoleLogger();
 }

@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft;
 
-internal class MoexHistory(string ticker, HttpClient httpClient, CandleParser candleParser, SplitParser splitParser) : History
+internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient httpClient, CandleParser candleParser, SplitParser splitParser) : History
 {
     public async Task<Candle[]> GetCandles(int fromPosition)
     {
@@ -18,7 +18,7 @@ internal class MoexHistory(string ticker, HttpClient httpClient, CandleParser ca
         HttpResponseMessage response = await httpClient.GetAsync(url);
 
         if (!response.IsSuccessStatusCode)
-            throw new TerminateException($"Ошибка GET запроса на сервер по такому URL: \"{url}\"");
+            throw new GoodException($"Ошибка GET запроса на сервер по такому URL: \"{url}\"");
 
         string text = await response.Content.ReadAsStringAsync();
 
@@ -69,7 +69,7 @@ internal class MoexHistory(string ticker, HttpClient httpClient, CandleParser ca
     }
 
     private Task<string> DownloadCandleText(int fromPosition) => DownloadTextFrom(
-        $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval=1&start={fromPosition}");
+        $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval={timeframeInMinutes}&start={fromPosition}");
 
     private Task<string> DownloadSplitText() => DownloadTextFrom(
         $"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml");

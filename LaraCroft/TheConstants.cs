@@ -8,7 +8,6 @@ internal class TheConstants : Constants
         """
         {
           "OutputDirectory": ".\\History",
-          "CandleDurationInMinutes": 1
         }
         """;
 }

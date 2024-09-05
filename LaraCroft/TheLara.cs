@@ -6,7 +6,7 @@ internal class TheLara(Factory factory) : Lara
 
     private readonly Logger logger = factory.MakeLogger();
 
-    public async Task DownloadCandles(Action? onSuccess = null)
+    public async Task DownloadCandles(int timeframeInMinutes)
     {
         var tickers = input.GetTickers();
 
@@ -14,12 +14,13 @@ internal class TheLara(Factory factory) : Lara
         {
             logger.Log($"Качаю {ticker}");
 
-            Excavator excavator = factory.MakeExcavator(ticker);
+            var excavator = factory.MakeExcavator(ticker, timeframeInMinutes,
+                factory.MakeFilePlaceToPut(ticker, timeframeInMinutes));
 
             await excavator.Dig(ticker);
         }
     }
 
-    public Task DownloadVolumes(Action? onSuccess = null) =>
+    public Task DownloadVolumes(int timeframeInMinutes) =>
         throw new NotImplementedException();
 }

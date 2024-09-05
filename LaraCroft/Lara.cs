@@ -2,7 +2,7 @@
 
 public interface Lara
 {
-    Task DownloadCandles(Action? onSuccess = null);
+    Task DownloadCandles(int timeframeInMinutes);
 
-    Task DownloadVolumes(Action? onSuccess = null);
+    Task DownloadVolumes(int timeframeInMinutes);
 }

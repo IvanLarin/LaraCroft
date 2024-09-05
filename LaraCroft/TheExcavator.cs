@@ -2,7 +2,7 @@
 
 namespace LaraCroft
 {
-    internal class TheExcavator(History history, Storage storage, Logger logger) : Excavator
+    internal class TheExcavator(History history, PlaceToPut placeToPut, Logger logger) : Excavator
     {
         public async Task Dig(string ticker)
         {
@@ -13,7 +13,7 @@ namespace LaraCroft
             {
                 Candle[] candles = await history.GetCandles(position);
 
-                storage.Save(candles);
+                placeToPut.Put(candles);
 
                 theEnd = !candles.Any();
 

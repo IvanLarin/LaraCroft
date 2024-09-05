@@ -4,25 +4,23 @@ internal class TheStyleOf(Lara lara, Factory factory) : Lara
 {
     private readonly Logger logger = factory.MakeLogger();
 
-    public Task DownloadCandles(Action? onSuccess = null) =>
-        InTheLaraStyle(() => lara.DownloadCandles(), onSuccess);
+    public Task DownloadCandles(int timeframeInMinutes) =>
+        InTheLaraStyle(() => lara.DownloadCandles(timeframeInMinutes));
 
-    public Task DownloadVolumes(Action? onSuccess = null) =>
-        InTheLaraStyle(() => lara.DownloadVolumes(), onSuccess);
 
-    private async Task InTheLaraStyle(Func<Task> doIt, Action? onSuccess = null)
+    public Task DownloadVolumes(int timeframeInMinutes) =>
+        InTheLaraStyle(() => lara.DownloadVolumes(timeframeInMinutes));
+
+    private async Task InTheLaraStyle(Func<Task> doIt)
     {
         try
         {
             await doIt();
-
-            logger.LogSuccess("Миссия выполнена");
-
-            onSuccess?.Invoke();
         }
-        catch (TerminateException e)
+        catch (GoodException e)
         {
             logger.LogError(e.Message);
+            throw;
         }
         catch (Exception e)
         {

@@ -27,7 +27,7 @@ internal class XmlCandleParser : CandleParser
         }
         catch (Exception e)
         {
-            throw new TerminateException($$"""
+            throw new GoodException($$"""
                                            Не удалось распарсить данные с сервера. Вот, что он вернул:
                                            {{text}}
                                            """, e);
