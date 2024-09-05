@@ -7,7 +7,7 @@ internal class TheConstants : Constants
     public string DefaultConfigContent =>
         """
         {
-          "OutputDirectory": ".\\History",
+          "OutputDirectory": ".\\History"
         }
         """;
 }

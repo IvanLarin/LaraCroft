@@ -17,19 +17,19 @@ internal class TxtFile(string ticker, int timeframeInMinutes, Config config) : P
         using var writer = new StreamWriter(filePath, alreadySaved);
 
         if (!alreadySaved)
-            writer.WriteLine("<TICKER>;<PER>;<DATE>;<TIME>;<OPEN>;<HIGH>;<LOW>;<CLOSE>;<VOL>");
+            writer.WriteLine("<TICKER>,<PER>,<DATE>,<TIME>,<OPEN>,<HIGH>,<LOW>,<CLOSE>,<VOL>");
 
         foreach (var candle in candles)
         {
-            var str = string.Join(';', [
+            var str = string.Join(',', [
                 ticker,
                 timeframeInMinutes,
-                candle.Begin.ToString("yyMMdd"),
+                candle.Begin.ToString("yyyyMMdd"),
                 candle.Begin.ToString("HHmmss"),
-                candle.Open.ToString(CultureInfo.InvariantCulture),
-                candle.High.ToString(CultureInfo.InvariantCulture),
-                candle.Low.ToString(CultureInfo.InvariantCulture),
-                candle.Close.ToString(CultureInfo.InvariantCulture),
+                candle.Open.ToString("F8", CultureInfo.InvariantCulture),
+                candle.High.ToString("F8", CultureInfo.InvariantCulture),
+                candle.Low.ToString("F8", CultureInfo.InvariantCulture),
+                candle.Close.ToString("F8", CultureInfo.InvariantCulture),
                 candle.Volume.ToString(CultureInfo.InvariantCulture)
             ]);
             writer.WriteLine(str);

@@ -21,7 +21,7 @@ internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient htt
         bool needFixVolumeBecauseOfSplit = Math.Abs(1 - multiplier) > double.Epsilon;
 
         if (needFixVolumeBecauseOfSplit)
-            return candles.Select(candle => candle with { Volume = candle.Volume / multiplier }).ToArray();
+            return candles.Select(candle => candle with { Volume = (long)(candle.Volume / multiplier) }).ToArray();
 
         return candles;
     }

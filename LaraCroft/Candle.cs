@@ -10,7 +10,7 @@ internal record Candle
 
     public double Low { get; init; }
 
-    public double Volume { get; init; }
+    public long Volume { get; init; }
 
     public DateTime Begin { get; init; }
 
