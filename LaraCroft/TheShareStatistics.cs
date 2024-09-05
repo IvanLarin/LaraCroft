@@ -67,11 +67,11 @@ internal class TheShareStatistics : ShareStatistics
     {
         var sb = new StringBuilder();
 
-        sb.AppendLine("Тикер;Название;Средний объём рублей в день");
+        sb.AppendLine("Тикер;Название;Средний объём рублей в день;Уровень листинга");
 
         foreach (var item in statistics)
         {
-            var row = string.Join(";", [item.Share.Ticker, item.Share.Name, item.MiddleVolume]);
+            var row = string.Join(";", [item.Share.Ticker, item.Share.Name, item.MiddleVolume, item.Share.ListingLevel]);
             sb.AppendLine(row);
         }
 

@@ -27,8 +27,8 @@ internal class TheLara(Factory factory) : Lara
         Share[] shares = await factory.MakeSharesGetter().GetShares();
 
         logger.Log($$"""
-                   Вот какие:
-                   {{string.Join(Environment.NewLine, shares.Select(share => share.Ticker))}}
+                   Их {{shares.Length}} шт. Вот какие:
+                   {{string.Join("    ", shares.Select(share => share.Ticker))}}
                    """);
 
         ShareStatistics statistics = factory.MakeShareStatistics();
