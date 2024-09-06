@@ -25,6 +25,7 @@ internal class HandleProblemsOf(Part part, Mind mind) : Part
             {
                 Console.WriteLine();
                 AwesomeConsole.WriteLineWithColor(ConsoleColor.DarkRed, exception.Message);
+                mind.BecomeFail();
             }
 
 

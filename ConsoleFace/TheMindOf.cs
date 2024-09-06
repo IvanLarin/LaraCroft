@@ -33,4 +33,6 @@ internal class TheMindOf : Mind
     public void BecomeSuccess() => Become(new Success(this));
 
     public void BecomeNirvana() => Become(new Nirvana());
+
+    public void BecomeFail() => Become(new Fail(this));
 }

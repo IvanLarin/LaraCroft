@@ -2,37 +2,29 @@
 
 namespace LaraCroft;
 
-internal class XmlSplitsParser : Parser<double[]>
+internal class XmlSplitsParser : Parser<Split[]>
 {
-    public double[] Parse(string text)
+    public Split[] Parse(string text)
     {
-        int ParseInt(string? str) => int.Parse(str ?? throw new Exception());
-
         try
         {
             var document = XDocument.Parse(text);
 
             Split[] splits = document.Descendants("row").Select(row => new Split
             {
-                Before = ParseInt(row.Attribute("before")?.Value),
-                After = ParseInt(row.Attribute("after")?.Value),
+                Date = DateTime.Parse(row.Attribute("tradedate")!.Value),
+                Before = int.Parse(row.Attribute("before")!.Value),
+                After = int.Parse(row.Attribute("after")!.Value)
             }).ToArray();
 
-            return splits.Select(split => (double)split.Before / split.After).ToArray();
+            return splits;
         }
         catch (Exception e)
         {
             throw new GoodException($$"""
-                                           Не удалось распарсить данные с сервера. Вот, что он вернул:
-                                           {{text}}
-                                           """, e);
+                                      Не удалось распарсить данные с сервера. Вот, что он вернул:
+                                      {{text}}
+                                      """, innerException: e);
         }
-    }
-
-    private record Split
-    {
-        public int Before { get; init; }
-
-        public int After { get; init; }
     }
 }

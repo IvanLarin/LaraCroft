@@ -2,35 +2,23 @@
 
 internal class TheFactory : Factory
 {
-    private Constants? constants;
+    private readonly Config config = new JsonConfig();
 
-    private HttpClient? httpClient;
-    private Logger? logger;
+    private readonly HttpClient httpClient = new();
+
+    private readonly Logger logger = new ConsoleLogger();
 
     public Input MakeInput() => new TheInput();
 
     public Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut) =>
         new TheExcavator(MakeHistoryOf(ticker, timeframeInMinutes), placeToPut, MakeLogger());
 
-    public Logger MakeLogger() => logger ??= new ConsoleLogger();
-
-    public Lara MakeLara() => new TheLara(this);
-
-    private History MakeHistoryOf(string ticker, int timeframeInMinutes) => new MoexHistory(ticker, timeframeInMinutes,
-        MakeHttpClient(), MakeCandlesParser(), MakeSplitsParser());
-
-    private Parser<double[]> MakeSplitsParser() => new XmlSplitsParser();
-
-    private HttpClient MakeHttpClient() => httpClient ??= new HttpClient();
-
-    private Parser<Candle[]> MakeCandlesParser() => new XmlCandlesParser();
+    public Logger MakeLogger() => logger;
 
     public PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes) =>
-        new TxtFile(ticker, timeframeInMinutes, MakeConfig());
+        new TxtFile(ticker, timeframeInMinutes, config);
 
-    public SharesGetter MakeSharesGetter() => new TheSharesGetter(MakeHttpClient(), MakeSharesParser());
-
-    private Parser<Share[]> MakeSharesParser() => new XmlSharesParser();
+    public SharesGetter MakeSharesGetter() => new TheSharesGetter(MakeDownloader(), MakeSharesParser());
 
     public CandleBuffer MakeCandleBuffer() => new TheCandleBuffer();
 
@@ -38,7 +26,16 @@ internal class TheFactory : Factory
 
     public Output MakeOutput() => new ConsoleOutput();
 
-    private Config MakeConfig() => new JsonConfig(MakeConstants());
+    public Lara MakeLara() => new TheLara(this);
 
-    private Constants MakeConstants() => constants ??= new TheConstants();
+    private History MakeHistoryOf(string ticker, int timeframeInMinutes) => new MoexHistory(ticker, timeframeInMinutes,
+        MakeDownloader(), MakeCandlesParser(), MakeSplitsParser());
+
+    private Downloader MakeDownloader() => new TheDownloader(httpClient, config, MakeLogger());
+
+    private Parser<Split[]> MakeSplitsParser() => new XmlSplitsParser();
+
+    private Parser<Candle[]> MakeCandlesParser() => new XmlCandlesParser();
+
+    private Parser<Share[]> MakeSharesParser() => new XmlSharesParser();
 }

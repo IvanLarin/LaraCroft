@@ -1,76 +1,50 @@
-﻿namespace LaraCroft;
+﻿using Common;
 
-internal class MoexHistory(string ticker, int timeframeInMinutes, HttpClient httpClient, Parser<Candle[]> candleParser, Parser<double[]> splitParser) : History
+namespace LaraCroft;
+
+internal class MoexHistory(
+    string ticker,
+    int timeframeInMinutes,
+    Downloader downloader,
+    Parser<Candle[]> candleParser,
+    Parser<Split[]> splitParser) : History
 {
-    public async Task<Candle[]> GetCandles(int fromPosition)
-    {
-        string text = await DownloadCandleText(fromPosition);
+    private Split[]? allSplits;
 
-        Candle[] candles = candleParser.Parse(text);
+    public Task<Candle[]> GetCandles(int fromPosition) => DoGetCandles(fromPosition).Pipe(AdjustVolumesForSplits);
 
-        Candle[] fixedCandles = await FixVolume(candles);
+    private Task<Candle[]> AdjustVolumesForSplits(Candle[] candles) =>
+        candles.Select(AdjustCandleVolume).Pipe(Task.WhenAll);
 
-        return fixedCandles;
-    }
+    private async Task<Candle> AdjustCandleVolume(Candle candle) =>
+        candle with { Volume = await candle.Pipe(CalculateNewVolume) };
 
-    private async Task<Candle[]> FixVolume(Candle[] candles)
-    {
+    private async Task<long> CalculateNewVolume(Candle candle) =>
+        (candle.Volume / await GetSplitFactorOnDate(candle.Begin))
+        .Pipe(Math.Round)
+        .Pipe(Convert.ToInt64);
 
-        double multiplier = await GetSplitMultiplier();
+    private Task<double> GetSplitFactorOnDate(DateTime date) => GetSplitsSince(date).Pipe(GetSplitsFactor);
 
-        bool needFixVolumeBecauseOfSplit = Math.Abs(1 - multiplier) > double.Epsilon;
+    private double GetSplitsFactor(Split[] splits) => splits.Select(GetSplitFactor).Pipe(Multiply);
 
-        if (needFixVolumeBecauseOfSplit)
-            return candles.Select(candle => candle with { Volume = (long)(candle.Volume / multiplier) }).ToArray();
+    private double GetSplitFactor(Split split) => (double)split.Before / split.After;
 
-        return candles;
-    }
+    private double Multiply(IEnumerable<double> factors) => factors.Aggregate(1.0, func: (p, x) => p * x);
 
-    private double? splitMultiplier;
+    private async Task<Split[]> GetSplitsSince(DateTime date) =>
+        (await GetAllSplits()).Where(split => date <= split.Date).ToArray();
 
-    private async Task<double> GetSplitMultiplier()
-    {
-        if (splitMultiplier.HasValue)
-            return splitMultiplier.Value;
+    private async Task<Candle[]> DoGetCandles(int fromPosition) =>
+        (await DownloadCandleText(fromPosition)).Pipe(candleParser.Parse);
 
-        double[] splits = await GetSplits();
+    private async Task<Split[]> GetAllSplits() => allSplits ??= (await DownloadSplitText()).Pipe(splitParser.Parse);
 
-        if (splits.Any())
-        {
-            double totalSplit = splits.Aggregate(1.0, (acc, x) => acc * x);
-            splitMultiplier = totalSplit;
-            return totalSplit;
-        }
+    private Task<string> DownloadCandleText(int fromPosition) =>
+        $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval={timeframeInMinutes}&start={fromPosition}"
+            .Pipe(downloader.Download);
 
-        splitMultiplier = 1;
-
-        return 1;
-    }
-
-    private async Task<double[]> GetSplits()
-    {
-        string text = await DownloadSplitText();
-
-        double[] splits = splitParser.Parse(text);
-
-        return splits;
-    }
-
-    private Task<string> DownloadCandleText(int fromPosition) => DownloadTextFrom(
-        $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval={timeframeInMinutes}&start={fromPosition}");
-
-    private Task<string> DownloadSplitText() => DownloadTextFrom(
-        $"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml");
-
-    private async Task<string> DownloadTextFrom(string url)
-    {
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-
-        if (!response.IsSuccessStatusCode)
-            throw new GoodException($"Ошибка GET запроса на сервер по такому URL: \"{url}\"");
-
-        string text = await response.Content.ReadAsStringAsync();
-
-        return text;
-    }
+    private Task<string> DownloadSplitText() =>
+        $"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml"
+            .Pipe(downloader.Download);
 }

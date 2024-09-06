@@ -19,4 +19,6 @@ internal interface Mind : Part
     void BecomeSuccess();
 
     void BecomeNirvana();
+
+    void BecomeFail();
 }
