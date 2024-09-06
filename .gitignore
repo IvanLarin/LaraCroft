@@ -1,3 +1,4 @@
 ﻿/.vs
 **/bin/
 **/obj/
+/ConsoleFace/Properties/PublishProfiles/FolderProfile.pubxml.user
