@@ -10,15 +10,17 @@ internal class TheFactory : Factory
 
     public Input MakeInput() => new TheInput();
 
-    public Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut) =>
-        new TheExcavator(MakeHistoryOf(ticker, timeframeInMinutes), placeToPut, MakeLogger());
+    public Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut,
+        CancellationToken token) =>
+        new TheExcavator(MakeHistoryOf(ticker, timeframeInMinutes, token), placeToPut, MakeLogger());
 
     public Logger MakeLogger() => logger;
 
-    public PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes) =>
+    public PlaceToPut MakeFile(string ticker, int timeframeInMinutes) =>
         new TxtFile(ticker, timeframeInMinutes, config);
 
-    public SharesGetter MakeSharesGetter() => new TheSharesGetter(MakeDownloader(), MakeSharesParser());
+    public SharesGetter MakeSharesGetter(CancellationToken token = default) =>
+        new TheSharesGetter(MakeDownloader(token), MakeSharesParser());
 
     public CandleBuffer MakeCandleBuffer() => new TheCandleBuffer();
 
@@ -28,10 +30,12 @@ internal class TheFactory : Factory
 
     public Lara MakeLara() => new TheLara(this);
 
-    private History MakeHistoryOf(string ticker, int timeframeInMinutes) => new MoexHistory(ticker, timeframeInMinutes,
-        MakeDownloader(), MakeCandlesParser(), MakeSplitsParser());
+    public History MakeHistoryOf(string ticker, int timeframeInMinutes, CancellationToken token = default) => new MoexHistory(
+        ticker, timeframeInMinutes,
+        MakeDownloader(token), MakeCandlesParser(), MakeSplitsParser());
 
-    private Downloader MakeDownloader() => new TheDownloader(httpClient, config, MakeLogger());
+    private Downloader MakeDownloader(CancellationToken token) =>
+        new TheDownloader(httpClient, config, MakeLogger(), token);
 
     private Parser<Split[]> MakeSplitsParser() => new XmlSplitsParser();
 

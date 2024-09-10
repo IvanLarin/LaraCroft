@@ -1,6 +1,4 @@
-﻿using Common;
-
-namespace LaraCroft;
+﻿namespace LaraCroft;
 
 internal class MoexHistory(
     string ticker,
@@ -11,40 +9,39 @@ internal class MoexHistory(
 {
     private Split[]? allSplits;
 
-    public Task<Candle[]> GetCandles(int fromPosition) => DoGetCandles(fromPosition).Pipe(AdjustVolumesForSplits);
+    public async Task<Candle[]> GetCandles(int fromPosition)
+    {
+        await DownloadSplits();
+        Candle[] candles = await DoGetCandles(fromPosition);
 
-    private Task<Candle[]> AdjustVolumesForSplits(Candle[] candles) =>
-        candles.Select(AdjustCandleVolume).Pipe(Task.WhenAll);
+        return AdjustVolumesForSplits(candles);
+    }
 
-    private async Task<Candle> AdjustCandleVolume(Candle candle) =>
-        candle with { Volume = await candle.Pipe(CalculateNewVolume) };
+    private async Task DownloadSplits() => allSplits ??= splitParser.Parse(await DownloadSplitText());
 
-    private async Task<long> CalculateNewVolume(Candle candle) =>
-        (candle.Volume / await GetSplitFactorOnDate(candle.Begin))
-        .Pipe(Math.Round)
-        .Pipe(Convert.ToInt64);
+    private Candle[] AdjustVolumesForSplits(Candle[] candles) => candles.Select(AdjustCandleVolume).ToArray();
 
-    private Task<double> GetSplitFactorOnDate(DateTime date) => GetSplitsSince(date).Pipe(GetSplitsFactor);
+    private Candle AdjustCandleVolume(Candle candle) =>
+        candle with { Volume = CalculateNewVolumeOf(candle) };
 
-    private double GetSplitsFactor(Split[] splits) => splits.Select(GetSplitFactor).Pipe(Multiply);
+    private long CalculateNewVolumeOf(Candle candle) =>
+        Convert.ToInt64(Math.Round(candle.Volume / GetSplitFactorOnDate(candle.Begin)));
+
+    private double GetSplitFactorOnDate(DateTime date) => CalculateSplitsFactor(Since(date));
+
+    private double CalculateSplitsFactor(Split[] splits) => Multiply(splits.Select(GetSplitFactor));
 
     private double GetSplitFactor(Split split) => (double)split.Before / split.After;
 
     private double Multiply(IEnumerable<double> factors) => factors.Aggregate(1.0, func: (p, x) => p * x);
 
-    private async Task<Split[]> GetSplitsSince(DateTime date) =>
-        (await GetAllSplits()).Where(split => date <= split.Date).ToArray();
+    private Split[] Since(DateTime date) => allSplits!.Where(split => date <= split.Date).ToArray();
 
-    private async Task<Candle[]> DoGetCandles(int fromPosition) =>
-        (await DownloadCandleText(fromPosition)).Pipe(candleParser.Parse);
-
-    private async Task<Split[]> GetAllSplits() => allSplits ??= (await DownloadSplitText()).Pipe(splitParser.Parse);
+    private async Task<Candle[]> DoGetCandles(int fromPosition) => candleParser.Parse(await DownloadCandleText(fromPosition));
 
     private Task<string> DownloadCandleText(int fromPosition) =>
-        $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval={timeframeInMinutes}&start={fromPosition}"
-            .Pipe(downloader.Download);
+        downloader.Download($"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.xml?interval={timeframeInMinutes}&start={fromPosition}");
 
     private Task<string> DownloadSplitText() =>
-        $"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml"
-            .Pipe(downloader.Download);
+        downloader.Download($"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml");
 }

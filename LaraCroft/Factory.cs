@@ -6,11 +6,12 @@ internal interface Factory
 
     Input MakeInput();
 
-    Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut);
+    Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut,
+        CancellationToken token = default);
 
-    PlaceToPut MakeFilePlaceToPut(string ticker, int timeframeInMinutes);
+    PlaceToPut MakeFile(string ticker, int timeframeInMinutes);
 
-    SharesGetter MakeSharesGetter();
+    SharesGetter MakeSharesGetter(CancellationToken token = default);
 
     CandleBuffer MakeCandleBuffer();
 

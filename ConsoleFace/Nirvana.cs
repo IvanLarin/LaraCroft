@@ -1,9 +1,8 @@
-﻿namespace ConsoleFace
-{
-    internal class Nirvana : Part
-    {
-        public bool Is => false;
+﻿namespace ConsoleFace;
 
-        public void Do() { }
-    }
+internal class Nirvana : Part
+{
+    public void Do() { }
+
+    public bool Is => false;
 }

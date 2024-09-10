@@ -8,9 +8,6 @@ internal class ChatWith(Lara lara)
     {
         Mind mind = new TheMindOf(lara);
 
-        do
-        {
-            mind.Do();
-        } while (mind.Is);
+        while (mind.Is) mind.Do();
     }
 }

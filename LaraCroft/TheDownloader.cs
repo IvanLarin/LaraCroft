@@ -1,20 +1,21 @@
-﻿using Common;
+﻿namespace LaraCroft;
 
-namespace LaraCroft;
-
-internal class TheDownloader(HttpClient client, Config config, Logger logger) : Downloader
+internal class TheDownloader(HttpClient client, Config config, Logger logger, CancellationToken token) : Downloader
 {
-    public Task<string> Download(string uri) =>
-        StringDownloader(uri).Pipe(Retryer).Pipe(fn => HandleException(fn, uri));
+    public Task<string> Download(string url) => DoDownload(WithHandlingException(WithRetries(FromThis(url)), url));
 
-    private Func<Task<string>> StringDownloader(string uri) => () => client.GetStringAsync(uri);
+    private Task<string> DoDownload(Func<Task<string>> fn) => fn();
 
-    private Func<Task<string>> Retryer(Func<Task<string>> fn) => async Task<string> () =>
+    private Func<Task<string>> FromThis(string url) => () => client.GetStringAsync(url);
+
+    private Func<Task<string>> WithRetries(Func<Task<string>> fn) => async Task<string> () =>
     {
         var attempt = 0;
         while (true)
             try
             {
+                token.ThrowIfCancellationRequested();
+
                 return await fn();
             }
             catch (Exception e)
@@ -28,8 +29,7 @@ internal class TheDownloader(HttpClient client, Config config, Logger logger) : 
             }
     };
 
-
-    private async Task<string> HandleException(Func<Task<string>> fn, string uri)
+    private Func<Task<string>> WithHandlingException(Func<Task<string>> fn, string url) => async () =>
     {
         try
         {
@@ -38,9 +38,9 @@ internal class TheDownloader(HttpClient client, Config config, Logger logger) : 
         catch (HttpRequestException e)
         {
             throw new GoodException($$"""
-                                      Ошибка GET запроса на сервер по такому запросу: "{{uri}}"
+                                      Ошибка GET запроса на сервер по такому запросу: "{{url}}"
                                       {{e.Message}}
                                       """, e);
         }
-    }
+    };
 }

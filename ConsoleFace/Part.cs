@@ -2,7 +2,7 @@
 
 internal interface Part
 {
-    public bool Is => true;
+    bool Is => true;
 
-    public void Do();
+    void Do();
 }
