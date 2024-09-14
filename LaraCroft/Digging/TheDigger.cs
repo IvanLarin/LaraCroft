@@ -13,7 +13,7 @@ internal class TheDigger(
 {
     public async Task Dig(Work<Candle>[] works, int timeframeInMinutes)
     {
-        logger.WriteLine("Качаю. Сейчас пойдёт статистика...");
+        logger.WriteLine("Начинаю. Сейчас пойдёт инфа...");
 
         using ProgressTracker<ShareProgress> tracker =
             await MakeTracker(works.Select(w => w.Ticker).ToArray());
