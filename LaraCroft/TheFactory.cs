@@ -1,4 +1,16 @@
-﻿namespace LaraCroft;
+﻿using LaraCroft.Calculating;
+using LaraCroft.Chronology;
+using LaraCroft.Configuration;
+using LaraCroft.Digging;
+using LaraCroft.Downloading;
+using LaraCroft.Entities;
+using LaraCroft.Inputting;
+using LaraCroft.Logging;
+using LaraCroft.Parsing;
+using LaraCroft.Placing;
+using LaraCroft.ProgressTracking;
+
+namespace LaraCroft;
 
 internal class TheFactory : Factory
 {
@@ -6,36 +18,42 @@ internal class TheFactory : Factory
 
     private readonly HttpClient httpClient = new();
 
-    private readonly Logger logger = new ConsoleLogger();
+    private readonly Logger logger = new ConcurrentLogger(new ConsoleLogger());
 
-    public Input MakeInput() => new TheInput();
+    public Excavator MakeExcavator(PlaceToPut<Candle> placeToPut, string ticker, int timeframeInMinutes,
+        ProgressTracker<ShareProgress> tracker, CancellationToken token = default) =>
+        new TheExcavator(placeToPut, ticker, MakeHistoryOf(ticker, timeframeInMinutes, token), tracker);
 
-    public Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut,
-        CancellationToken token) =>
-        new TheExcavator(MakeHistoryOf(ticker, timeframeInMinutes, token), placeToPut, MakeLogger());
-
-    public Logger MakeLogger() => logger;
-
-    public PlaceToPut MakeFile(string ticker, int timeframeInMinutes) =>
+    public PlaceToPut<Candle> MakeFile(string ticker, int timeframeInMinutes) =>
         new TxtFile(ticker, timeframeInMinutes, config);
 
-    public SharesGetter MakeSharesGetter(CancellationToken token = default) =>
-        new TheSharesGetter(MakeDownloader(token), MakeSharesParser());
-
-    public CandleBuffer MakeCandleBuffer() => new TheCandleBuffer();
-
-    public ShareStatistics MakeShareStatistics() => new TheShareStatistics();
-
-    public Output MakeOutput() => new ConsoleOutput();
-
-    public Lara MakeLara() => new TheLara(this);
-
-    public History MakeHistoryOf(string ticker, int timeframeInMinutes, CancellationToken token = default) => new MoexHistory(
-        ticker, timeframeInMinutes,
-        MakeDownloader(token), MakeCandlesParser(), MakeSplitsParser());
+    public SharesDownloader MakeSharesDownloader(CancellationToken token = default) =>
+        new TheSharesDownloader(MakeDownloader(token), MakeSharesParser());
 
     private Downloader MakeDownloader(CancellationToken token) =>
-        new TheDownloader(httpClient, config, MakeLogger(), token);
+        new TheDownloader(httpClient, config, logger, token);
+
+    public Place<Candle> MakeCandlePlace() => new CandlePlace();
+
+    public VolumeCalculator MakeVolumeCalculator() => new TheVolumeCalculator();
+
+    public Digger MakeDigger() => new TheDigger(this, this, this, logger);
+
+    public ProgressTracker<ShareProgress> MakeProgressTracker(ShareProgress[] initialProgress) =>
+        new SharesProgressTracker(initialProgress, this);
+
+    public CandlesDownloader MakeCandlesDownloader(int timeframeInMinutes, CancellationToken token) =>
+        new TheCandlesDownloader(timeframeInMinutes, MakeDownloader(token), MakeCandlesParser());
+
+    public ProgressDisplay<ShareProgress> MakeProgressDisplay() => new ShareProgressDisplay(logger);
+
+    public Lara MakeLara() => new TheLara(this, MakeInput(), logger);
+
+    private Input MakeInput() => new TheInput(logger);
+
+    private History MakeHistoryOf(string ticker, int timeframeInMinutes, CancellationToken token = default) =>
+        new MoexHistory(
+            ticker, MakeDownloader(token), MakeSplitsParser(), MakeCandlesDownloader(timeframeInMinutes, token));
 
     private Parser<Split[]> MakeSplitsParser() => new XmlSplitsParser();
 

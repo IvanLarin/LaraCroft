@@ -1,21 +1,25 @@
-﻿namespace LaraCroft;
+﻿using LaraCroft.Calculating;
+using LaraCroft.Digging;
+using LaraCroft.Downloading;
+using LaraCroft.Entities;
+using LaraCroft.Placing;
+using LaraCroft.ProgressTracking;
 
-internal interface Factory
+namespace LaraCroft;
+
+internal interface Factory :
+    ShareProgressDisplayFactory,
+    ExcavatorFactory,
+    TrackerFactory<ShareProgress>,
+    CandlesDownloaderFactory
 {
-    Logger MakeLogger();
+    PlaceToPut<Candle> MakeFile(string ticker, int timeframeInMinutes);
 
-    Input MakeInput();
+    SharesDownloader MakeSharesDownloader(CancellationToken token = default);
 
-    Excavator MakeExcavator(string ticker, int timeframeInMinutes, PlaceToPut placeToPut,
-        CancellationToken token = default);
+    Place<Candle> MakeCandlePlace();
 
-    PlaceToPut MakeFile(string ticker, int timeframeInMinutes);
+    VolumeCalculator MakeVolumeCalculator();
 
-    SharesGetter MakeSharesGetter(CancellationToken token = default);
-
-    CandleBuffer MakeCandleBuffer();
-
-    ShareStatistics MakeShareStatistics();
-
-    Output MakeOutput();
+    Digger MakeDigger();
 }

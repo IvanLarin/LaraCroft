@@ -1,63 +1,77 @@
-﻿namespace LaraCroft;
+﻿using LaraCroft.Digging;
+using LaraCroft.Entities;
+using LaraCroft.Inputting;
+using LaraCroft.Logging;
 
-internal class TheLara(Factory factory) : Lara
+namespace LaraCroft;
+
+internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 {
     private const int OneHour = 60;
-    private readonly Input input = factory.MakeInput();
-
-    private readonly Logger logger = factory.MakeLogger();
 
     public async Task DownloadCandles(int timeframeInMinutes)
     {
         var tickers = input.GetTickers();
 
-        using var cts = new CancellationTokenSource();
-
-        await Parallel.ForEachAsync(tickers, cts.Token, body: async (ticker, token) =>
+        Work<Candle>[] works = tickers.Select(ticker => new Work<Candle>
         {
-            try
-            {
-                logger.Log($"Качаю {ticker}");
+            PlaceToPut = factory.MakeFile(ticker, timeframeInMinutes),
+            Ticker = ticker
+        }).ToArray();
 
-                var excavator = factory.MakeExcavator(ticker, timeframeInMinutes,
-                    factory.MakeFile(ticker, timeframeInMinutes), token);
-
-                await excavator.Dig();
-            }
-            catch
-            {
-                await cts.CancelAsync();
-                throw;
-            }
-        });
+        await factory.MakeDigger().Dig(works, timeframeInMinutes);
     }
 
-    public async Task DownloadVolumes()
+    public async Task ShowShares()
     {
-        logger.Log("Узнаю какие вообще есть акции...");
-        Share[] shares = await factory.MakeSharesGetter().GetShares();
+        logger.WriteLine("Узнаю какие акции есть вообще...");
 
-        logger.Log($$"""
-                     Их {{shares.Length}} шт. Вот какие:
-                     {{string.Join("    ", shares.Select(share => share.Ticker))}}
-                     """);
+        Share[] shares = await GetShares();
 
-        var statistics = factory.MakeShareStatistics();
+        (Placing.Place<Candle> Place, Share Share)[] places =
+            shares.Take(10).Select(share => (Place: factory.MakeCandlePlace(), Share: share)).ToArray();
 
-        foreach (var share in shares)
+        Work<Candle>[] works = places.Select(work => new Work<Candle>
         {
-            logger.Log($"Качаю статистику по {share.Ticker}");
-            var buffer = factory.MakeCandleBuffer();
-            var excavator = factory.MakeExcavator(share.Ticker, OneHour, buffer);
+            PlaceToPut = work.Place,
+            Ticker = work.Share.Ticker
+        }).ToArray();
 
-            await excavator.Dig();
+        await factory.MakeDigger().Dig(works, OneHour);
 
-            statistics.Add(share, buffer.Candles);
+        var calculator = factory.MakeVolumeCalculator();
+
+        (Share Share, int Volume, DateTime Begin)[] statistics = places.Select(work =>
+            (work.Share,
+                Volume: calculator.CalculateMiddleVolume(work.Place.Get()),
+                Begin: work.Place.Get().Min(candle => candle.Begin))).ToArray();
+
+        WriteStatistics(statistics);
+    }
+
+    private async Task<Share[]> GetShares()
+    {
+        using var cts = new CancellationTokenSource();
+
+        try
+        {
+            return await factory.MakeSharesDownloader(cts.Token).Download();
         }
+        catch
+        {
+            await cts.CancelAsync();
+            throw;
+        }
+    }
 
-        logger.Log("Вот результаты:" + Environment.NewLine);
+    private void WriteStatistics((Share Share, int Volume, DateTime Begin)[] statistics)
+    {
+        logger.WriteLine("Вот результаты. Это CSV:");
+        logger.WriteLine();
 
-        var output = factory.MakeOutput();
-        statistics.WriteTo(output);
+        logger.WriteLine("Тикер;Название;Средний объём рублей в день;Уровень листинга;Дата начала истории");
+
+        Array.ForEach(statistics, action: s => logger.WriteLine(
+            string.Join(";", [s.Share.Ticker, s.Share.Name, s.Volume, s.Share.ListingLevel, $"{s.Begin:dd.MM.yyyy}"])));
     }
 }

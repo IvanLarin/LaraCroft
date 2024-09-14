@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LaraCroft", "LaraCroft\Lara
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Common\Common.csproj", "{059B1D1C-757D-4168-8D3E-BD40597FC20F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleFace", "ConsoleFace\ConsoleFace.csproj", "{F28E7D0D-55B3-4481-932B-B34C5650BA46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsoleApp", "ConsoleApp\ConsoleApp.csproj", "{DA493A85-48A2-489C-8215-811E5522EE04}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -23,10 +23,10 @@ Global
 		{059B1D1C-757D-4168-8D3E-BD40597FC20F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{059B1D1C-757D-4168-8D3E-BD40597FC20F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{059B1D1C-757D-4168-8D3E-BD40597FC20F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F28E7D0D-55B3-4481-932B-B34C5650BA46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F28E7D0D-55B3-4481-932B-B34C5650BA46}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F28E7D0D-55B3-4481-932B-B34C5650BA46}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F28E7D0D-55B3-4481-932B-B34C5650BA46}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DA493A85-48A2-489C-8215-811E5522EE04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DA493A85-48A2-489C-8215-811E5522EE04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DA493A85-48A2-489C-8215-811E5522EE04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DA493A85-48A2-489C-8215-811E5522EE04}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
