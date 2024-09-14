@@ -2,6 +2,7 @@
 using LaraCroft.Entities;
 using LaraCroft.Inputting;
 using LaraCroft.Logging;
+using LaraCroft.Placing;
 
 namespace LaraCroft;
 
@@ -28,8 +29,8 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         Share[] shares = await GetShares();
 
-        (Placing.Place<Candle> Place, Share Share)[] places =
-            shares.Take(10).Select(share => (Place: factory.MakeCandlePlace(), Share: share)).ToArray();
+        (Place<Candle> Place, Share Share)[] places =
+            shares.Select(share => (Place: factory.MakeCandlePlace(), Share: share)).ToArray();
 
         Work<Candle>[] works = places.Select(work => new Work<Candle>
         {
@@ -41,12 +42,19 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         var calculator = factory.MakeVolumeCalculator();
 
-        (Share Share, int Volume, DateTime Begin)[] statistics = places.Select(work =>
+        (Share Share, int Volume, DateTime? Begin)[] statistics = places.Select(work =>
             (work.Share,
-                Volume: calculator.CalculateMiddleVolume(work.Place.Get()),
-                Begin: work.Place.Get().Min(candle => candle.Begin))).ToArray();
+                Volume: calculator.CalculateAverageVolume(work.Place.Get()),
+                Begin: GetBegin(work.Place.Get()))).ToArray();
 
         WriteStatistics(statistics);
+    }
+
+    private DateTime? GetBegin(Candle[] candles)
+    {
+        if (candles.Any())
+            return candles.Min(candle => candle.Begin);
+        return null;
     }
 
     private async Task<Share[]> GetShares()
@@ -64,7 +72,7 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
         }
     }
 
-    private void WriteStatistics((Share Share, int Volume, DateTime Begin)[] statistics)
+    private void WriteStatistics((Share Share, int Volume, DateTime? Begin)[] statistics)
     {
         logger.WriteLine("Вот результаты. Это CSV:");
         logger.WriteLine();

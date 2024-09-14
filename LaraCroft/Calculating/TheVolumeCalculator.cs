@@ -5,7 +5,7 @@ namespace LaraCroft.Calculating;
 
 internal class TheVolumeCalculator : VolumeCalculator
 {
-    public int CalculateMiddleVolume(Candle[] candles)
+    public int CalculateAverageVolume(Candle[] candles)
     {
         if (candles.Length == 0) return 0;
 
@@ -19,9 +19,9 @@ internal class TheVolumeCalculator : VolumeCalculator
         var weekdayCount = Enumerable.Range(0, (int)(now - begin).TotalDays)
             .Select(daysSinceBegin => IsWeekday(begin.AddDays(daysSinceBegin))).Count(isWeekday => isWeekday);
 
-        var middleVolume = (int)(totalVolumeInRubles / weekdayCount);
+        var averageVolume = (int)(totalVolumeInRubles / weekdayCount);
 
-        return middleVolume;
+        return averageVolume;
     }
 
     private bool IsWeekday(DateTime date) => !IsWeekend(date) && !Holidays.Contains((date.Day, date.Month));

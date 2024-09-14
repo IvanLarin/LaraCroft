@@ -4,5 +4,5 @@ namespace LaraCroft.Calculating;
 
 internal interface VolumeCalculator
 {
-    int CalculateMiddleVolume(Candle[] candles);
+    int CalculateAverageVolume(Candle[] candles);
 }
