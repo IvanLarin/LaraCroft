@@ -71,4 +71,12 @@ public class ConcurrentLogger : Logger
             logger.SetCursorPosition(left, top);
         }
     }
+
+    public void WriteError(Exception exception)
+    {
+        lock (lockObject)
+        {
+            logger.WriteError(exception);
+        }
+    }
 }

@@ -3,10 +3,10 @@
 public static class AwesomeConsole
 {
     public static void WriteLineWithColor(ConsoleColor color, object value) =>
-        WithColor(color: color, doIt: () => Console.WriteLine(value: value));
+        WithColor(color, () => Console.WriteLine(value: value));
 
     public static void WriteWithColor(ConsoleColor color, object value) =>
-        WithColor(color: color, doIt: () => Console.Write(value: value));
+        WithColor(color, () => Console.Write(value: value));
 
     public static void WithColor(ConsoleColor color, Action doIt)
     {
@@ -27,10 +27,7 @@ public static class AwesomeConsole
         {
             var keyInfo = Console.ReadKey(true);
 
-            if (keyInfo.Key == ConsoleKey.Escape)
-            {
-                return false;
-            }
+            if (keyInfo.Key == ConsoleKey.Escape) return false;
 
             if (keyInfo.Key == ConsoleKey.Enter)
             {
@@ -56,6 +53,38 @@ public static class AwesomeConsole
 
             input += keyInfo.KeyChar;
             Console.Write(value: keyInfo.KeyChar);
+        }
+    }
+
+    public static void WriteError(Exception exception)
+    {
+        Console.WriteLine();
+
+        WriteLineWithColor(ConsoleColor.DarkRed, $"{exception.GetType().FullName}: {exception.Message}");
+
+        if (exception is AggregateException aggregateException)
+            WriteInnerErrors(aggregateException);
+        else
+            WriteInnerErrors(exception);
+    }
+
+    public static void WriteInnerErrors(AggregateException aggregateException)
+    {
+        var number = 0;
+
+        Array.ForEach(aggregateException.Flatten().InnerExceptions.ToArray(), e =>
+        {
+            WriteLineWithColor(ConsoleColor.DarkRed, $"Inner exception #{number++}");
+            WriteError(e);
+        });
+    }
+
+    public static void WriteInnerErrors(Exception exception)
+    {
+        if (exception.InnerException != null)
+        {
+            WriteLineWithColor(ConsoleColor.DarkRed, "Inner exception");
+            WriteError(exception.InnerException);
         }
     }
 }

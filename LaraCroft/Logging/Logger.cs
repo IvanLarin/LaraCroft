@@ -13,4 +13,6 @@ public interface Logger
     bool CursorVisible { get; set; }
 
     void SetCursorPosition(int left, int top);
+
+    void WriteError(Exception exception);
 }

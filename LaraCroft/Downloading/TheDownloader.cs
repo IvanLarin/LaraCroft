@@ -21,9 +21,9 @@ internal class TheDownloader(HttpClient client, Config config, Logger logger, Ca
 
                 return await fn();
             }
-            catch (HttpRequestException e)
+            catch (Exception e)
             {
-                logger.WriteErrorLine(e.Message);
+                logger.WriteError(e);
 
                 attempt++;
                 if (attempt >= config.TryCountToDownload)
@@ -39,12 +39,9 @@ internal class TheDownloader(HttpClient client, Config config, Logger logger, Ca
         {
             return await fn();
         }
-        catch (HttpRequestException e)
+        catch (Exception e)
         {
-            throw new GoodException($$"""
-                                      Ошибка GET запроса на сервер по такому запросу: "{{url}}"
-                                      {{e.Message}}
-                                      """, e);
+            throw new GoodException($"Ошибка GET запроса на сервер по такому запросу: \"{url}\"", e);
         }
     };
 }

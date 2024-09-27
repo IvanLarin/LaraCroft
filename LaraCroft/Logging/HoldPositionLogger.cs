@@ -22,6 +22,8 @@ internal class HoldPositionLogger(Logger logger) : Logger
             logger.SetCursorPosition(left, top);
     }
 
+    public void WriteError(Exception exception) => logger.WriteError(exception);
+
     private Action<string> DoFromPosition(Action<string> doIt) => value =>
     {
         var currentPosition = logger.GetCursorPosition();

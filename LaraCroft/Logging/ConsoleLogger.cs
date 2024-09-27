@@ -35,4 +35,6 @@ internal class ConsoleLogger : Logger
     }
 
     public void SetCursorPosition(int left, int top) => Console.SetCursorPosition(left, top);
+
+    public void WriteError(Exception exception) => AwesomeConsole.WriteError(exception);
 }

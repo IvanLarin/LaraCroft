@@ -1,4 +1,5 @@
-﻿using LaraCroft.Downloading;
+﻿using Common;
+using LaraCroft.Downloading;
 using LaraCroft.Entities;
 using LaraCroft.Logging;
 using LaraCroft.ProgressTracking;
@@ -20,21 +21,13 @@ internal class TheDigger(
 
         using var cts = new CancellationTokenSource();
 
-        await Parallel.ForEachAsync(works, cts.Token, body: async (work, token) =>
+        await works.ForEachAsync(cts.Token, body: async (work, token) =>
         {
-            try
-            {
-                var excavator = excavatorFactory.MakeExcavator(work.PlaceToPut, work.Ticker,
-                    timeframeInMinutes, tracker, token);
+            var excavator = excavatorFactory.MakeExcavator(work.PlaceToPut, work.Ticker,
+                timeframeInMinutes, tracker, token);
 
-                await excavator.Dig();
-            }
-            catch
-            {
-                await cts.CancelAsync();
-                throw;
-            }
-        });
+            await excavator.Dig();
+        }, onException: _ => cts.Cancel());
     }
 
     private async Task<ProgressTracker<ShareProgress>> MakeTracker(string[] tickers)
