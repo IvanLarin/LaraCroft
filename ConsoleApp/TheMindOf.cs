@@ -27,7 +27,7 @@ internal class TheMindOf : Mind
 
     public void BecomeCandle() => Become(new CandleMenu(this));
 
-    public void BecomeVolume() => Become(new Volume(this));
+    public void BecomeParameters() => Become(new Parameters(this));
 
     public void BecomeGoodbye() => Become(new Goodbye(this));
 

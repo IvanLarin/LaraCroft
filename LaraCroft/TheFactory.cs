@@ -24,8 +24,8 @@ internal class TheFactory : Factory
         ProgressTracker<ShareProgress> tracker, CancellationToken token = default) =>
         new TheExcavator(placeToPut, ticker, MakeHistoryOf(ticker, timeframeInMinutes, token), tracker);
 
-    public PlaceToPut<Candle> MakeFile(string ticker, int timeframeInMinutes) =>
-        new TxtFile(ticker, timeframeInMinutes, config);
+    public PlaceToPut<Candle> MakeCandlePlace(string ticker, int timeframeInMinutes) =>
+        new BadCandlesRemove(new TxtFile(ticker, timeframeInMinutes, config));
 
     public SharesDownloader MakeSharesDownloader(CancellationToken token = default) =>
         new TheSharesDownloader(MakeDownloader(token), MakeSharesParser());
@@ -33,7 +33,7 @@ internal class TheFactory : Factory
     private Downloader MakeDownloader(CancellationToken token) =>
         new TheDownloader(httpClient, config, logger, token);
 
-    public Place<Candle> MakeCandlePlace() => new CandlePlace();
+    public Place<Candle> MakeInMemoryCandlePlace() => new CandlePlace();
 
     public VolumeCalculator MakeVolumeCalculator() => new TheVolumeCalculator();
 

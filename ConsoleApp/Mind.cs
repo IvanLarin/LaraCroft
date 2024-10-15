@@ -12,7 +12,7 @@ internal interface Mind : Part
 
     void BecomeCandle();
 
-    void BecomeVolume();
+    void BecomeParameters();
 
     void BecomeGoodbye();
 

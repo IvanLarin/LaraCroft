@@ -10,7 +10,7 @@ internal class MainMenu(Mind mind) : Part
                       
                       Что будем делать:
                       1. Качать свечи
-                      2. Качать статистику
+                      2. Качать параметры акций (чтобы было какие выбрать)
                       3. Выйти (Esc)
 
                       Введите номер пункта и нажмите Enter: 
@@ -34,7 +34,7 @@ internal class MainMenu(Mind mind) : Part
                     mind.BecomeCandle();
                     return;
                 case "2":
-                    mind.BecomeVolume();
+                    mind.BecomeParameters();
                     return;
                 case "3":
                     mind.BecomeGoodbye();

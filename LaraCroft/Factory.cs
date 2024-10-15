@@ -13,11 +13,11 @@ internal interface Factory :
     TrackerFactory<ShareProgress>,
     CandlesDownloaderFactory
 {
-    PlaceToPut<Candle> MakeFile(string ticker, int timeframeInMinutes);
+    PlaceToPut<Candle> MakeCandlePlace(string ticker, int timeframeInMinutes);
 
     SharesDownloader MakeSharesDownloader(CancellationToken token = default);
 
-    Place<Candle> MakeCandlePlace();
+    Place<Candle> MakeInMemoryCandlePlace();
 
     VolumeCalculator MakeVolumeCalculator();
 

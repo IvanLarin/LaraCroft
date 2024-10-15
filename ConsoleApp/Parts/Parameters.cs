@@ -1,10 +1,10 @@
 ﻿namespace ConsoleApp.Parts;
 
-internal class Volume(Mind mind) : Part
+internal class Parameters(Mind mind) : Part
 {
     public void Do()
     {
-        mind.Lara.ShowShares().Wait();
+        mind.Lara.ShowShareParameters().Wait();
 
         mind.BecomeSuccess();
     }

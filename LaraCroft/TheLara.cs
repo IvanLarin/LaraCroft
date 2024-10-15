@@ -16,21 +16,21 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         Work<Candle>[] works = tickers.Select(ticker => new Work<Candle>
         {
-            PlaceToPut = factory.MakeFile(ticker, timeframeInMinutes),
+            PlaceToPut = factory.MakeCandlePlace(ticker, timeframeInMinutes),
             Ticker = ticker
         }).ToArray();
 
         await factory.MakeDigger().Dig(works, timeframeInMinutes);
     }
 
-    public async Task ShowShares()
+    public async Task ShowShareParameters()
     {
         logger.WriteLine("Узнаю какие акции есть вообще...");
 
         Share[] shares = await GetShares();
 
         (Place<Candle> Place, Share Share)[] places =
-            shares.Select(share => (Place: factory.MakeCandlePlace(), Share: share)).ToArray();
+            shares.Select(share => (Place: factory.MakeInMemoryCandlePlace(), Share: share)).ToArray();
 
         Work<Candle>[] works = places.Select(work => new Work<Candle>
         {
@@ -42,12 +42,12 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         var calculator = factory.MakeVolumeCalculator();
 
-        (Share Share, int Volume, DateTime? Begin)[] statistics = places.Select(work =>
+        (Share Share, int Volume, DateTime? Begin)[] parameters = places.Select(work =>
             (work.Share,
                 Volume: calculator.CalculateAverageVolume(work.Place.Get()),
                 Begin: GetBegin(work.Place.Get()))).ToArray();
 
-        WriteStatistics(statistics);
+        WriteParameters(parameters);
     }
 
     private DateTime? GetBegin(Candle[] candles)
@@ -72,14 +72,14 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
         }
     }
 
-    private void WriteStatistics((Share Share, int Volume, DateTime? Begin)[] statistics)
+    private void WriteParameters((Share Share, int Volume, DateTime? Begin)[] parameters)
     {
         logger.WriteLine("Вот результаты. Это CSV:");
         logger.WriteLine();
 
         logger.WriteLine("Тикер;Название;Средний объём рублей в день;Уровень листинга;Дата начала истории");
 
-        Array.ForEach(statistics, action: s => logger.WriteLine(
+        Array.ForEach(parameters, action: s => logger.WriteLine(
             string.Join(";", [s.Share.Ticker, s.Share.Name, s.Volume, s.Share.ListingLevel, $"{s.Begin:dd.MM.yyyy}"])));
     }
 }
