@@ -1,5 +1,6 @@
 ﻿using LaraCroft.Configuration;
 using LaraCroft.Entities;
+using System.Globalization;
 using System.Text.Json;
 
 namespace LaraCroft.Placing
@@ -32,10 +33,13 @@ namespace LaraCroft.Placing
 
             var jsonObject = new
             {
-                Decimals = decimals,
-                MinStep = minStep,
-                LotSize = lotSize,
-                HistoryLength = truncatedHistoryLength
+                Ticker = ticker,
+                Name = $"Lara_{ticker}",
+                Decimals = decimals.ToString(),
+                CashDecimals = 2.ToString(),
+                PriceStep = minStep.ToString(CultureInfo.InvariantCulture),
+                LotSize = lotSize.ToString(),
+                HistoryYears = truncatedHistoryLength.ToString(CultureInfo.InvariantCulture),
             };
 
             var options = new JsonSerializerOptions
