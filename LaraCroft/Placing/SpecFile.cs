@@ -1,7 +1,6 @@
 ﻿using LaraCroft.Configuration;
 using LaraCroft.Entities;
 using System.Globalization;
-using System.Text.Json;
 
 namespace LaraCroft.Placing
 {
@@ -12,7 +11,7 @@ namespace LaraCroft.Placing
 
         public void Save(int decimals, double minStep, int lotSize, CandlesBorder border)
         {
-            var fileName = "spec.json";
+            var fileName = "spec.spec";
             var directoryName = Path.Combine(config.OutputDirectory, ticker);
             var filePath = Path.Combine(directoryName, fileName);
 
@@ -31,24 +30,18 @@ namespace LaraCroft.Placing
             var historyLength = (border.End - border.Begin).TotalDays / 365;
             var truncatedHistoryLength = Math.Floor(historyLength * 10) / 10;
 
-            var jsonObject = new
-            {
-                Ticker = ticker,
-                Name = $"Lara_{ticker}",
-                Decimals = decimals.ToString(),
-                CashDecimals = 2.ToString(),
-                PriceStep = minStep.ToString(CultureInfo.InvariantCulture),
-                LotSize = lotSize.ToString(),
-                HistoryYears = truncatedHistoryLength.ToString(CultureInfo.InvariantCulture),
-            };
+            var text =
+                $""" 
+                Тикер: {ticker}
+                Имя: Lara_{ticker}
+                Количество знаков: {decimals}
+                Кол-во денежных знаков: 2
+                Шаг цены: {minStep.ToString(CultureInfo.InvariantCulture)}
+                Размер лота: {lotSize}
+                Лет истории: {truncatedHistoryLength.ToString(CultureInfo.InvariantCulture)}
+                """;
 
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true,
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            };
-
-            return JsonSerializer.Serialize(jsonObject, options);
+            return text;
         }
     }
 }

@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace LaraCroft.Placing;
 
-internal class TxtFile(string ticker, int interval, Config config) : PlaceToPut<Candle[]>
+internal class CandlesTxtFile(string ticker, int interval, Config config) : PlaceToPut<Candle[]>
 {
     private bool alreadySaved;
 

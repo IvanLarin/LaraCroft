@@ -25,7 +25,7 @@ internal class TheFactory : Factory
         new TheExcavator(placeToPut, ticker, MakeHistoryOf(ticker, interval, token), tracker);
 
     public PlaceToPut<Candle[]> MakeCandlePlace(string ticker, int interval) =>
-        new BadCandlesRemove(new TxtFile(ticker, interval, config));
+        new BadCandlesRemove(new CandlesTxtFile(ticker, interval, config));
 
     public SharesDownloader MakeSharesDownloader(CancellationToken token = default) =>
         new TheSharesDownloader(MakeDownloader(token), MakeSharesParser());
