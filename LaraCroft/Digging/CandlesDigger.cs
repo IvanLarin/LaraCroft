@@ -1,21 +1,18 @@
 ﻿using Common;
 using LaraCroft.Downloading;
 using LaraCroft.Entities;
-using LaraCroft.Logging;
 using LaraCroft.ProgressTracking;
 
 namespace LaraCroft.Digging;
 
-internal class TheDigger(
+internal class CandlesDigger(
     ExcavatorFactory excavatorFactory,
     TrackerFactory<ShareProgress> trackerFactory,
     CandlesDownloaderFactory candlesDownloaderFactory,
-    Logger logger) : Digger
+    int interval) : Digger<Candle[]>
 {
-    public async Task Dig(Work<Candle>[] works, int timeframeInMinutes)
+    public async Task Dig(Work<Candle[]>[] works)
     {
-        logger.WriteLine("Начинаю. Сейчас пойдёт инфа...");
-
         using ProgressTracker<ShareProgress> tracker =
             await MakeTracker(works.Select(w => w.Ticker).ToArray());
 
@@ -24,7 +21,7 @@ internal class TheDigger(
         await works.ForEachAsync(cts.Token, body: async (work, token) =>
         {
             var excavator = excavatorFactory.MakeExcavator(work.PlaceToPut, work.Ticker,
-                timeframeInMinutes, tracker, token);
+                interval, tracker, token);
 
             await excavator.Dig();
         }, onException: _ => cts.Cancel());
@@ -32,7 +29,7 @@ internal class TheDigger(
 
     private async Task<ProgressTracker<ShareProgress>> MakeTracker(string[] tickers)
     {
-        var downloader = candlesDownloaderFactory.MakeCandlesDownloader(timeframeInMinutes: 1);
+        var downloader = candlesDownloaderFactory.MakeCandlesDownloader(interval: 1);
 
         IEnumerable<Task<ShareProgress>> tasks = tickers.Select(async ticker =>
             GetInitialProgress(ticker, await downloader.Download(ticker, 0)));

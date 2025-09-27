@@ -2,7 +2,7 @@ using LaraCroft.Entities;
 
 namespace LaraCroft.Placing;
 
-internal class BadCandlesRemove(PlaceToPut<Candle> place) : PlaceToPut<Candle>
+internal class BadCandlesRemove(PlaceToPut<Candle[]> place) : PlaceToPut<Candle[]>
 {
     private Candle[] buffer = [];
 

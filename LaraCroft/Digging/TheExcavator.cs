@@ -6,7 +6,7 @@ using LaraCroft.ProgressTracking;
 namespace LaraCroft.Digging;
 
 internal class TheExcavator(
-    PlaceToPut<Candle> placeToPut,
+    PlaceToPut<Candle[]> placeToPut,
     string ticker,
     History history,
     ProgressTracker<ShareProgress> tracker) : Excavator

@@ -2,5 +2,5 @@
 
 internal interface CandlesDownloaderFactory
 {
-    CandlesDownloader MakeCandlesDownloader(int timeframeInMinutes, CancellationToken token = default);
+    CandlesDownloader MakeCandlesDownloader(int interval, CancellationToken token = default);
 }

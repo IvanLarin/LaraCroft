@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace LaraCroft.Placing;
 
-internal class TxtFile(string ticker, int timeframeInMinutes, Config config) : PlaceToPut<Candle>
+internal class TxtFile(string ticker, int interval, Config config) : PlaceToPut<Candle[]>
 {
     private bool alreadySaved;
 
@@ -26,7 +26,7 @@ internal class TxtFile(string ticker, int timeframeInMinutes, Config config) : P
         {
             var str = string.Join(',', [
                 ticker,
-                timeframeInMinutes,
+                interval,
                 candle.Begin.ToString("yyyyMMdd"),
                 candle.Begin.ToString("HHmmss"),
                 candle.Open.ToString("F8", CultureInfo.InvariantCulture),

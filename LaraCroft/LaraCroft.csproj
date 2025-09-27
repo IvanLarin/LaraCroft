@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <None Remove="Downloading\TheCandlesDownloader.cs~RF88f19601.TMP" />
+    <None Remove="Parsing\BaseParser.cs~RF15eb57e.TMP" />
   </ItemGroup>
 
   <ItemGroup>

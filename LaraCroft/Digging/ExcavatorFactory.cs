@@ -6,7 +6,7 @@ namespace LaraCroft.Digging;
 
 internal interface ExcavatorFactory
 {
-    Excavator MakeExcavator(PlaceToPut<Candle> placeToPut, string ticker, int timeframeInMinutes,
+    Excavator MakeExcavator(PlaceToPut<Candle[]> placeToPut, string ticker, int interval,
         ProgressTracker<ShareProgress> tracker,
         CancellationToken token = default);
 }

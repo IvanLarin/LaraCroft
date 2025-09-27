@@ -7,7 +7,7 @@ internal class CandleMenu(Mind mind) : Part
     public void Do()
     {
         Console.WriteLine();
-        Console.Write("Введите интервал в минутах и нажите Enter: ");
+        Console.Write("Введите интервал и нажите Enter: ");
 
         while (true)
         {
@@ -21,9 +21,9 @@ internal class CandleMenu(Mind mind) : Part
 
             input = input.Trim();
 
-            if (int.TryParse(input, out var timeframeInMinutes) && timeframeInMinutes >= 1)
+            if (int.TryParse(input, out var interval) && interval >= 1)
             {
-                mind.Lara.DownloadCandles(timeframeInMinutes).Wait();
+                mind.Lara.DownloadCandles(interval).Wait();
 
                 mind.BecomeSuccess();
 

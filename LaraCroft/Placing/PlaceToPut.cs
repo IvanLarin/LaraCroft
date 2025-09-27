@@ -2,5 +2,5 @@
 
 internal interface PlaceToPut<in T>
 {
-    void Put(T[] candles);
+    void Put(T data);
 }

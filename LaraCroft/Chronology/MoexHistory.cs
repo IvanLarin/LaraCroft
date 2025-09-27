@@ -42,5 +42,5 @@ internal class MoexHistory(
     private Split[] Since(DateTime date) => allSplits!.Where(split => date <= split.Date).ToArray();
 
     private Task<string> DownloadSplitText() =>
-        downloader.Download($"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.xml");
+        downloader.Download($"https://iss.moex.com/iss/statistics/engines/stock/splits/{ticker}.json");
 }

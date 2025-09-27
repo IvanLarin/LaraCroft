@@ -1,8 +1,6 @@
-﻿using LaraCroft.Entities;
+﻿namespace LaraCroft.Digging;
 
-namespace LaraCroft.Digging;
-
-internal interface Digger
+internal interface Digger<T>
 {
-    Task Dig(Work<Candle>[] works, int timeframeInMinutes);
+    Task Dig(Work<T>[] works);
 }

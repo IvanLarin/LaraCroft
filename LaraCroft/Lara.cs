@@ -2,7 +2,7 @@
 
 public interface Lara
 {
-    Task DownloadCandles(int timeframeInMinutes);
+    Task DownloadCandles(int interval);
 
     Task ShowShareParameters();
 }

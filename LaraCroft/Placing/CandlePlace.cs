@@ -2,7 +2,7 @@
 
 namespace LaraCroft.Placing;
 
-internal class CandlePlace : Place<Candle>
+internal class CandlePlace : Place<Candle[]>
 {
     private Candle[] candles = [];
 

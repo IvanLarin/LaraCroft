@@ -2,5 +2,5 @@
 
 internal interface PlaceToGet<out T>
 {
-    T[] Get();
+    T Get();
 }

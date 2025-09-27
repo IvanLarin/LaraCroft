@@ -10,17 +10,37 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 {
     private const int OneHour = 60;
 
-    public async Task DownloadCandles(int timeframeInMinutes)
+    public async Task DownloadCandles(int interval)
     {
         var tickers = input.GetTickers();
 
-        Work<Candle>[] works = tickers.Select(ticker => new Work<Candle>
+        logger.WriteLine("Начинаю. Сейчас пойдёт инфа...");
+
+        await DownloadSpecs(tickers, interval);
+
+        await DigCandles(tickers, interval);
+    }
+
+    private async Task DigCandles(string[] tickers, int interval)
+    {
+        Work<Candle[]>[] works = tickers.Select(ticker => new Work<Candle[]>
         {
-            PlaceToPut = factory.MakeCandlePlace(ticker, timeframeInMinutes),
+            PlaceToPut = factory.MakeCandlePlace(ticker, interval),
             Ticker = ticker
         }).ToArray();
 
-        await factory.MakeDigger().Dig(works, timeframeInMinutes);
+        await factory.MakeCandleDigger(interval).Dig(works);
+    }
+
+    private async Task DownloadSpecs(string[] tickers, int interval)
+    {
+        Work<(Spec, CandlesBorder)>[] works = tickers.Select(ticker => new Work<(Spec, CandlesBorder)>
+        {
+            PlaceToPut = factory.MakeSpecPlace(ticker),
+            Ticker = ticker
+        }).ToArray();
+
+        await factory.MakeSpecDigger(interval).Dig(works);
     }
 
     public async Task ShowShareParameters()
@@ -29,16 +49,16 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         Share[] shares = await GetShares();
 
-        (Place<Candle> Place, Share Share)[] places =
+        (Place<Candle[]> Place, Share Share)[] places =
             shares.Select(share => (Place: factory.MakeInMemoryCandlePlace(), Share: share)).ToArray();
 
-        Work<Candle>[] works = places.Select(work => new Work<Candle>
+        Work<Candle[]>[] works = places.Select(work => new Work<Candle[]>
         {
             PlaceToPut = work.Place,
             Ticker = work.Share.Ticker
         }).ToArray();
 
-        await factory.MakeDigger().Dig(works, OneHour);
+        await factory.MakeCandleDigger(OneHour).Dig(works);
 
         var calculator = factory.MakeVolumeCalculator();
 
