@@ -11,10 +11,11 @@ internal class TxtFile(string ticker, int timeframeInMinutes, Config config) : P
     public void Put(Candle[] candles)
     {
         var fileName = $"{ticker}.txt";
-        var filePath = Path.Combine(config.OutputDirectory, fileName);
+        var directoryName = Path.Combine(config.OutputDirectory, ticker);
+        var filePath = Path.Combine(directoryName, fileName);
 
-        if (!Directory.Exists(config.OutputDirectory))
-            Directory.CreateDirectory(config.OutputDirectory);
+        if (!Directory.Exists(directoryName))
+            Directory.CreateDirectory(directoryName);
 
         using var writer = new StreamWriter(filePath, alreadySaved);
 
