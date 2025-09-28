@@ -1,14 +1,18 @@
 ﻿using LaraCroft.Entities;
 using LaraCroft.Parsing;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Downloading;
 
-internal class TheCandlesDownloader(
-    int interval,
-    Downloader downloader,
-    Parser<Candle[]> candleParser) : CandlesDownloader
+internal class CandlesDownloaderProps
 {
-    public async Task<Candle[]> Download(string ticker, int fromPosition) => candleParser.Parse(
-        await downloader.Download(
-            $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candles.json?interval={interval}&start={fromPosition}"));
+    public required int FromPosition { get; init; }
+
+    public required Ticker Ticker { get; init; }
+}
+
+internal class TheCandlesDownloader(Interval interval, Parser<Candle[]> parser, BackDownloader downloader) : BaseDownloader<CandlesDownloaderProps, Candle[]>(parser, downloader), CandlesDownloader
+{
+    protected override Url GetUrl(CandlesDownloaderProps props) =>
+        new($"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{props.Ticker}/candles.json?interval={interval}&start={props.FromPosition}");
 }

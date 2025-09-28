@@ -2,12 +2,13 @@
 using LaraCroft.Entities;
 using LaraCroft.Placing;
 using LaraCroft.ProgressTracking;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Digging;
 
 internal class TheExcavator(
     PlaceToPut<Candle[]> placeToPut,
-    string ticker,
+    Ticker ticker,
     History history,
     ProgressTracker<ShareProgress> tracker) : Excavator
 {

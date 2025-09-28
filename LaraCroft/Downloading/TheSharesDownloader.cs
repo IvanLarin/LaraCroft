@@ -1,9 +1,11 @@
 ﻿using LaraCroft.Entities;
 using LaraCroft.Parsing;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Downloading;
 
-internal class TheSharesDownloader(Downloader downloader, Parser<Share[]> parser) : SharesDownloader
+internal class TheSharesDownloader(Parser<Share[]> parser, BackDownloader downloader) : BaseDownloader<Dummy, Share[]>(parser, downloader), SharesDownloader
 {
-    public async Task<Share[]> Download() => parser.Parse(await downloader.Download("https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.xml"));
+    protected override Url GetUrl(Dummy props) =>
+        new("https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities.xml");
 }

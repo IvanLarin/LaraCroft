@@ -9,6 +9,7 @@ using LaraCroft.Logging;
 using LaraCroft.Parsing;
 using LaraCroft.Placing;
 using LaraCroft.ProgressTracking;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft;
 
@@ -20,48 +21,56 @@ internal class TheFactory : Factory
 
     private readonly Logger logger = new ConcurrentLogger(new ConsoleLogger());
 
-    public Excavator MakeExcavator(PlaceToPut<Candle[]> placeToPut, string ticker, int interval,
-        ProgressTracker<ShareProgress> tracker, CancellationToken token = default) =>
-        new TheExcavator(placeToPut, ticker, MakeHistoryOf(ticker, interval, token), tracker);
-
-    public PlaceToPut<Candle[]> MakeCandlePlace(string ticker, int interval) =>
+    public PlaceToPut<Candle[]> MakeCandlePlace(Ticker ticker, Interval interval) =>
         new BadCandlesRemove(new CandlesTxtFile(ticker, interval, config));
 
-    public SharesDownloader MakeSharesDownloader(CancellationToken token = default) =>
-        new TheSharesDownloader(MakeDownloader(token), MakeSharesParser());
+    public Digger<Candle[]> MakeCandleDigger(Interval interval) =>
+        new CandlesDigger(interval, this, this, MakeCandlesDownloader(interval));
 
-    public Downloader MakeDownloader(CancellationToken token) =>
-        new TheDownloader(httpClient, config, logger, token);
+    public BackDownloader MakeBackDownloader() =>
+        new TheBackDownloader(httpClient, config, logger);
+
+    public TheCandlesDownloader MakeCandlesDownloader(Interval interval) =>
+        new TheCandlesDownloader(interval, MakeCandlesParser(), MakeBackDownloader());
+
+    private Parser<Candle[]> MakeCandlesParser() => new CandlesJsonParser();
+
+    public Excavator MakeExcavator(PlaceToPut<Candle[]> placeToPut, Ticker ticker, Interval interval, ProgressTracker<ShareProgress> tracker, CancellationToken token) =>
+        new TheExcavator(placeToPut, ticker, MakeHistoryOf(ticker, interval, token), tracker);
+
+    private History MakeHistoryOf(Ticker ticker, Interval interval, CancellationToken token) =>
+        new MoexHistory(
+            ticker, MakeSplitsDownloader(), MakeCandlesDownloader(interval), token);
+
+    private SplitsDownloader MakeSplitsDownloader() =>
+        new TheSplitsDownloader(MakeSplitsParser(), MakeBackDownloader());
+
+    private Parser<Split[]> MakeSplitsParser() => new SplitsJsonParser();
+
+    public PlaceToPut<(Spec, Border)> MakeSpecPlace(Ticker ticker) => new SpecFile(ticker, config);
+
+    public Digger<(Spec, Border)> MakeSpecDigger(Interval interval) => new SpecDigger(MakeSpecDownloader(), MakeBorderDownloader(interval));
+
+    private SpecDownloader MakeSpecDownloader() => new TheSpecDownloader(new SpecJsonParser(), MakeBackDownloader());
+
+    private BorderDownloader MakeBorderDownloader(Interval interval) =>
+        new TheBorderDownloader(new BorderJsonParser(interval), MakeBackDownloader());
 
     public Place<Candle[]> MakeInMemoryCandlePlace() => new CandlePlace();
 
     public VolumeCalculator MakeVolumeCalculator() => new TheVolumeCalculator();
 
-    public Digger<Candle[]> MakeCandleDigger(int interval) => new CandlesDigger(this, this, this, interval);
+    public SharesDownloader MakeSharesDownloader() =>
+        new TheSharesDownloader(MakeSharesParser(), MakeBackDownloader());
 
-    public PlaceToPut<(Spec, CandlesBorder)> MakeSpecPlace(string ticker) => new SpecFile(ticker, config);
-
-    public Digger<(Spec, CandlesBorder)> MakeSpecDigger(int interval) => new SpecDigger(interval, this, new SpecJsonParser(), new CandlesBordersJsonParser());
+    private Parser<Share[]> MakeSharesParser() => new SharesXmlParser();
 
     public ProgressTracker<ShareProgress> MakeProgressTracker(ShareProgress[] initialProgress) =>
         new SharesProgressTracker(initialProgress, this);
-
-    public CandlesDownloader MakeCandlesDownloader(int interval, CancellationToken token) =>
-        new TheCandlesDownloader(interval, MakeDownloader(token), MakeCandlesParser());
 
     public ProgressDisplay<ShareProgress> MakeProgressDisplay() => new ShareProgressDisplay(logger);
 
     public Lara MakeLara() => new TheLara(this, MakeInput(), logger);
 
     private Input MakeInput() => new TheInput(logger);
-
-    private History MakeHistoryOf(string ticker, int interval, CancellationToken token = default) =>
-        new MoexHistory(
-            ticker, MakeDownloader(token), MakeSplitsParser(), MakeCandlesDownloader(interval, token));
-
-    private Parser<Split[]> MakeSplitsParser() => new SplitsJsonParser();
-
-    private Parser<Candle[]> MakeCandlesParser() => new CandlesJsonParser();
-
-    private Parser<Share[]> MakeSharesParser() => new SharesXmlParser();
 }

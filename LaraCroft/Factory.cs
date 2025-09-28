@@ -4,28 +4,26 @@ using LaraCroft.Downloading;
 using LaraCroft.Entities;
 using LaraCroft.Placing;
 using LaraCroft.ProgressTracking;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft;
 
 internal interface Factory :
     ShareProgressDisplayFactory,
     ExcavatorFactory,
-    TrackerFactory<ShareProgress>,
-    CandlesDownloaderFactory
+    TrackerFactory<ShareProgress>
 {
-    PlaceToPut<Candle[]> MakeCandlePlace(string ticker, int interval);
+    PlaceToPut<Candle[]> MakeCandlePlace(Ticker ticker, Interval interval);
 
-    SharesDownloader MakeSharesDownloader(CancellationToken token = default);
+    public Digger<Candle[]> MakeCandleDigger(Interval interval);
 
-    Downloader MakeDownloader(CancellationToken token);
+    public PlaceToPut<(Spec, Border)> MakeSpecPlace(Ticker ticker);
+
+    Digger<(Spec, Border)> MakeSpecDigger(Interval interval);
 
     Place<Candle[]> MakeInMemoryCandlePlace();
 
     VolumeCalculator MakeVolumeCalculator();
 
-    public Digger<Candle[]> MakeCandleDigger(int interval);
-
-    public PlaceToPut<(Spec, CandlesBorder)> MakeSpecPlace(string ticker);
-
-    Digger<(Spec, CandlesBorder)> MakeSpecDigger(int interval);
+    SharesDownloader MakeSharesDownloader();
 }

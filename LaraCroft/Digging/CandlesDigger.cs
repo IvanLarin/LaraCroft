@@ -2,37 +2,39 @@
 using LaraCroft.Downloading;
 using LaraCroft.Entities;
 using LaraCroft.ProgressTracking;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Digging;
 
 internal class CandlesDigger(
+    Interval interval,
     ExcavatorFactory excavatorFactory,
     TrackerFactory<ShareProgress> trackerFactory,
-    CandlesDownloaderFactory candlesDownloaderFactory,
-    int interval) : Digger<Candle[]>
+    CandlesDownloader candlesDownloader) : Digger<Candle[]>
 {
     public async Task Dig(Work<Candle[]>[] works)
     {
-        using ProgressTracker<ShareProgress> tracker =
-            await MakeTracker(works.Select(w => w.Ticker).ToArray());
-
         using var cts = new CancellationTokenSource();
+
+        using ProgressTracker<ShareProgress> tracker =
+            await MakeTracker(works.Select(w => w.Ticker).ToArray(), cts.Token);
 
         await works.ForEachAsync(cts.Token, body: async (work, token) =>
         {
-            var excavator = excavatorFactory.MakeExcavator(work.PlaceToPut, work.Ticker,
-                interval, tracker, token);
+            var excavator = excavatorFactory.MakeExcavator(work.PlaceToPut, work.Ticker, interval, tracker, token);
 
             await excavator.Dig();
         }, onException: _ => cts.Cancel());
     }
 
-    private async Task<ProgressTracker<ShareProgress>> MakeTracker(string[] tickers)
+    private async Task<ProgressTracker<ShareProgress>> MakeTracker(Ticker[] tickers, CancellationToken token)
     {
-        var downloader = candlesDownloaderFactory.MakeCandlesDownloader(interval: 1);
-
         IEnumerable<Task<ShareProgress>> tasks = tickers.Select(async ticker =>
-            GetInitialProgress(ticker, await downloader.Download(ticker, 0)));
+            GetInitialProgress(ticker, await candlesDownloader.Download(new CandlesDownloaderProps
+            {
+                FromPosition = 0,
+                Ticker = ticker
+            }, token)));
 
         ShareProgress[] initialProgress = await Task.WhenAll(tasks);
 
@@ -41,7 +43,7 @@ internal class CandlesDigger(
         return progressTracker;
     }
 
-    private ShareProgress GetInitialProgress(string ticker, Candle[] candles)
+    private ShareProgress GetInitialProgress(Ticker ticker, Candle[] candles)
     {
         var candle = candles.MinBy(c => c.Begin);
         if (candle == null)

@@ -1,17 +1,18 @@
 ﻿using LaraCroft.Configuration;
 using LaraCroft.Logging;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Downloading;
 
-internal class TheDownloader(HttpClient client, Config config, Logger logger, CancellationToken token) : Downloader
+internal class TheBackDownloader(HttpClient client, Config config, Logger logger) : BackDownloader
 {
-    public Task<string> Download(string url) => DoDownload(WithHandlingException(WithRetries(FromThis(url)), url));
+    public async Task<TextFromBack> Download(Url url, CancellationToken token) => new(await DoDownload(WithHandlingException(WithRetries(FromThis(url), token), url)));
 
     private Task<string> DoDownload(Func<Task<string>> fn) => fn();
 
     private Func<Task<string>> FromThis(string url) => () => client.GetStringAsync(url);
 
-    private Func<Task<string>> WithRetries(Func<Task<string>> fn) => async Task<string> () =>
+    private Func<Task<string>> WithRetries(Func<Task<string>> fn, CancellationToken token) => async Task<string> () =>
     {
         var attempt = 0;
         while (true)
@@ -29,7 +30,7 @@ internal class TheDownloader(HttpClient client, Config config, Logger logger, Ca
                 if (attempt >= config.TryCountToDownload)
                     throw;
 
-                await Task.Delay(config.DelayBetweenTriesInMilliseconds);
+                await Task.Delay(config.DelayBetweenTriesInMilliseconds, token);
             }
     };
 

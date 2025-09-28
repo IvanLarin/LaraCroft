@@ -55,7 +55,7 @@ internal class ShareProgressDisplay(Logger logger) : ProgressDisplay<ShareProgre
         remainingMonths = CalculateRemainingDays(progress) / DaysInMonth;
         remainingMonthsAtStart = remainingDaysAtStart.HasValue ? remainingDaysAtStart.Value / DaysInMonth : 0;
         percentComplete = (remainingMonthsAtStart - remainingMonths) / remainingMonthsAtStart * 100;
-        maxTickerLength = Math.Max(maxTickerLength, progress.MaxBy(p => p.Ticker.Length)?.Ticker.Length ?? 0);
+        maxTickerLength = Math.Max(maxTickerLength, progress.MaxBy(p => p.Ticker.Value.Length)?.Ticker.Value.Length ?? 0);
     }
 
     private void Write()

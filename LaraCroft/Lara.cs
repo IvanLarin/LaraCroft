@@ -1,8 +1,10 @@
-﻿namespace LaraCroft;
+﻿using LaraCroft.ValueObjects;
+
+namespace LaraCroft;
 
 public interface Lara
 {
-    Task DownloadCandles(int interval);
+    Task DownloadCandles(Interval interval);
 
     Task ShowShareParameters();
 }

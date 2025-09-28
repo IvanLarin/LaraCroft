@@ -1,6 +1,6 @@
 ﻿namespace LaraCroft.Downloading;
 
-internal interface Downloader
+internal interface Downloader<in TProps, TResult>
 {
-    Task<string> Download(string url);
+    Task<TResult> Download(TProps props, CancellationToken token = default);
 }

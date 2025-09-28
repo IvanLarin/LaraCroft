@@ -3,14 +3,15 @@ using LaraCroft.Entities;
 using LaraCroft.Inputting;
 using LaraCroft.Logging;
 using LaraCroft.Placing;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft;
 
 internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 {
-    private const int OneHour = 60;
+    private Interval OneHour { get; } = new Interval(60);
 
-    public async Task DownloadCandles(int interval)
+    public async Task DownloadCandles(Interval interval)
     {
         var tickers = input.GetTickers();
 
@@ -21,7 +22,7 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
         await DigCandles(tickers, interval);
     }
 
-    private async Task DigCandles(string[] tickers, int interval)
+    private async Task DigCandles(Ticker[] tickers, Interval interval)
     {
         Work<Candle[]>[] works = tickers.Select(ticker => new Work<Candle[]>
         {
@@ -32,9 +33,9 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
         await factory.MakeCandleDigger(interval).Dig(works);
     }
 
-    private async Task DownloadSpecs(string[] tickers, int interval)
+    private async Task DownloadSpecs(Ticker[] tickers, Interval interval)
     {
-        Work<(Spec, CandlesBorder)>[] works = tickers.Select(ticker => new Work<(Spec, CandlesBorder)>
+        Work<(Spec, Border)>[] works = tickers.Select(ticker => new Work<(Spec, Border)>
         {
             PlaceToPut = factory.MakeSpecPlace(ticker),
             Ticker = ticker
@@ -83,7 +84,7 @@ internal class TheLara(Factory factory, Input input, Logger logger) : Lara
 
         try
         {
-            return await factory.MakeSharesDownloader(cts.Token).Download();
+            return await factory.MakeSharesDownloader().Download(new(), cts.Token);
         }
         catch
         {

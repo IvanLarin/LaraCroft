@@ -1,10 +1,11 @@
 ﻿using LaraCroft.Configuration;
 using LaraCroft.Entities;
+using LaraCroft.ValueObjects;
 using System.Globalization;
 
 namespace LaraCroft.Placing;
 
-internal class CandlesTxtFile(string ticker, int interval, Config config) : PlaceToPut<Candle[]>
+internal class CandlesTxtFile(Ticker ticker, Interval interval, Config config) : PlaceToPut<Candle[]>
 {
     private bool alreadySaved;
 

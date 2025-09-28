@@ -23,7 +23,7 @@ internal class CandleMenu(Mind mind) : Part
 
             if (int.TryParse(input, out var interval) && interval >= 1)
             {
-                mind.Lara.DownloadCandles(interval).Wait();
+                mind.Lara.DownloadCandles(new(interval)).Wait();
 
                 mind.BecomeSuccess();
 

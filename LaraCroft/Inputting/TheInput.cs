@@ -1,4 +1,5 @@
 ﻿using LaraCroft.Logging;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Inputting;
 
@@ -6,7 +7,7 @@ internal class TheInput(Logger logger) : Input
 {
     private const string FileName = "tickers.txt";
 
-    public string[] GetTickers()
+    public Ticker[] GetTickers()
     {
         try
         {
@@ -17,7 +18,7 @@ internal class TheInput(Logger logger) : Input
             var text = File.ReadAllText(filePath);
 
             var tickers = text.Split(["\r\n", "\n"], StringSplitOptions.None)
-                .Where(s => !string.IsNullOrWhiteSpace(s.Trim())).ToArray();
+                .Where(s => !string.IsNullOrWhiteSpace(s.Trim())).Select(x => new Ticker(x)).ToArray();
 
             if (!tickers.Any())
                 throw new GoodException(

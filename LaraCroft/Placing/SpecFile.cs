@@ -4,12 +4,12 @@ using System.Globalization;
 
 namespace LaraCroft.Placing
 {
-    internal class SpecFile(string ticker, Config config) : PlaceToPut<(Spec, CandlesBorder)>
+    internal class SpecFile(string ticker, Config config) : PlaceToPut<(Spec, Border)>
     {
-        public void Put((Spec, CandlesBorder) data) =>
+        public void Put((Spec, Border) data) =>
             Save(data.Item1.Decimals, data.Item1.MinStep, data.Item1.LotSize, data.Item2);
 
-        public void Save(int decimals, double minStep, int lotSize, CandlesBorder border)
+        public void Save(int decimals, double minStep, int lotSize, Border border)
         {
             var fileName = "spec.spec";
             var directoryName = Path.Combine(config.OutputDirectory, ticker);
@@ -25,7 +25,7 @@ namespace LaraCroft.Placing
             writer.Write(content);
         }
 
-        private string MakeContent(int decimals, double minStep, int lotSize, CandlesBorder border)
+        private string MakeContent(int decimals, double minStep, int lotSize, Border border)
         {
             var historyLength = (border.End - border.Begin).TotalDays / 365;
             var truncatedHistoryLength = Math.Floor(historyLength * 10) / 10;

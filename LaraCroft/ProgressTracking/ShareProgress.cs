@@ -1,8 +1,10 @@
-﻿namespace LaraCroft.ProgressTracking;
+﻿using LaraCroft.ValueObjects;
+
+namespace LaraCroft.ProgressTracking;
 
 internal record ShareProgress
 {
-    public required string Ticker { get; init; }
+    public required Ticker Ticker { get; init; }
 
     public required DateTime Date { get; init; }
 

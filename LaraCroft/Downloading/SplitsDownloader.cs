@@ -3,4 +3,4 @@ using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Downloading;
 
-internal interface SharesDownloader : Downloader<Dummy, Share[]>;
+internal interface SplitsDownloader : Downloader<Ticker, Split[]>;

@@ -1,8 +1,10 @@
-﻿namespace LaraCroft.Entities;
+﻿using LaraCroft.ValueObjects;
+
+namespace LaraCroft.Entities;
 
 internal record Share
 {
-    public required string Ticker { get; init; }
+    public required Ticker Ticker { get; init; }
 
     public required string Name { get; init; }
 

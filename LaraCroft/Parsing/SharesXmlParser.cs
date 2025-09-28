@@ -13,7 +13,7 @@ internal class SharesXmlParser : BaseParser<Share[]>
             .First(data => data.Attribute("id")?.Value == "securities")
             .Descendants("row").Select(row => new Share
             {
-                Ticker = row.Attribute("SECID")!.Value,
+                Ticker = new(row.Attribute("SECID")!.Value),
                 Name = row.Attribute("SECNAME")!.Value,
                 ListingLevel = int.Parse(row.Attribute("LISTLEVEL")!.Value)
             }).ToArray();

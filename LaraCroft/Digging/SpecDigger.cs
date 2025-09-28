@@ -1,12 +1,13 @@
 ﻿using Common;
+using LaraCroft.Downloading;
 using LaraCroft.Entities;
-using LaraCroft.Parsing;
+using LaraCroft.ValueObjects;
 
 namespace LaraCroft.Digging;
 
-internal class SpecDigger(int interval, Factory factory, Parser<Spec> specParser, Parser<CandlesBorder[]> candlesBordersParser) : Digger<(Spec, CandlesBorder)>
+internal class SpecDigger(SpecDownloader specDownloader, BorderDownloader borderDownloader) : Digger<(Spec, Border)>
 {
-    public async Task Dig(Work<(Spec, CandlesBorder)>[] works)
+    public async Task Dig(Work<(Spec, Border)>[] works)
     {
         using var cts = new CancellationTokenSource();
 
@@ -15,28 +16,13 @@ internal class SpecDigger(int interval, Factory factory, Parser<Spec> specParser
         , onException: _ => cts.Cancel());
     }
 
-    private async Task<(Spec, CandlesBorder)> DigSpec(string ticker, CancellationToken token)
+    private async Task<(Spec, Border)> DigSpec(Ticker ticker, CancellationToken token)
     {
-        var downloader = factory.MakeDownloader(token);
+        var spec = await specDownloader.Download(ticker, token);
 
-        string specJson =
-            await downloader.Download(
-                $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}.json");
 
-        Spec spec = specParser.Parse(specJson);
-
-        string bordersJson = await downloader.Download(
-            $"https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/{ticker}/candleborders.json");
-
-        CandlesBorder[] borders = candlesBordersParser.Parse(bordersJson);
-
-        var border = GetBorder(borders);
+        var border = await borderDownloader.Download(ticker, token);
 
         return (spec, border);
     }
-
-
-    private CandlesBorder GetBorder(CandlesBorder[] borders) =>
-        borders.FirstOrDefault(x => x.Interval == interval) ??
-        throw new Exception($"Нет границ для интервала {interval}");
 }

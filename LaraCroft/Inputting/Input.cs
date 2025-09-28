@@ -1,6 +1,8 @@
-﻿namespace LaraCroft.Inputting;
+﻿using LaraCroft.ValueObjects;
+
+namespace LaraCroft.Inputting;
 
 public interface Input
 {
-    string[] GetTickers();
+    Ticker[] GetTickers();
 }
