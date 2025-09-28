@@ -60,31 +60,6 @@ public static class AwesomeConsole
     {
         Console.WriteLine();
 
-        WriteLineWithColor(ConsoleColor.DarkRed, $"{exception.GetType().FullName}: {exception.Message}");
-
-        if (exception is AggregateException aggregateException)
-            WriteInnerErrors(aggregateException);
-        else
-            WriteInnerErrors(exception);
-    }
-
-    public static void WriteInnerErrors(AggregateException aggregateException)
-    {
-        var number = 0;
-
-        Array.ForEach(aggregateException.Flatten().InnerExceptions.ToArray(), e =>
-        {
-            WriteLineWithColor(ConsoleColor.DarkRed, $"Inner exception #{number++}");
-            WriteError(e);
-        });
-    }
-
-    public static void WriteInnerErrors(Exception exception)
-    {
-        if (exception.InnerException != null)
-        {
-            WriteLineWithColor(ConsoleColor.DarkRed, "Inner exception");
-            WriteError(exception.InnerException);
-        }
+        WriteLineWithColor(ConsoleColor.DarkRed, $"{exception}");
     }
 }

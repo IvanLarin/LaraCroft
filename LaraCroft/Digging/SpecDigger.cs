@@ -38,5 +38,5 @@ internal class SpecDigger(int interval, Factory factory, Parser<Spec> specParser
 
     private CandlesBorder GetBorder(CandlesBorder[] borders) =>
         borders.FirstOrDefault(x => x.Interval == interval) ??
-        throw new Exception("Нет границ для такого интервала");
+        throw new Exception($"Нет границ для интервала {interval}");
 }
